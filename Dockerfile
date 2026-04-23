@@ -18,7 +18,7 @@ COPY server/src server/src
 RUN chmod +x gradlew
 
 # Build with limited memory for free tier
-RUN ./gradlew :server:build -x test --no-daemon --max-workers=1 -Dorg.gradle.jvmargs="-Xmx512m -XX:MaxMetaspaceSize=256m"
+RUN ./gradlew :server:build -x test --no-daemon --max-workers=1 -Dorg.gradle.jvmargs="-Xmx400m -XX:MaxMetaspaceSize=200m" --no-build-cache
 
 # Use runtime image
 FROM eclipse-temurin:17-jre-jammy
