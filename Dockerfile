@@ -15,11 +15,11 @@ COPY server/pom.xml server/
 # Copy source code
 COPY server/src server/src
 
-# Make gradlew executable
-RUN chmod +x gradlew
+# Make gradlew executable and convert line endings
+RUN chmod +x gradlew && dos2unix gradlew || sed -i 's/\r$//' gradlew
 
-# Build the application (skip tests for faster build)
-RUN ./gradlew :server:build -x test
+# Build the application (skip tests for faster build) with Java 17
+RUN ./gradlew :server:build -x test --no-daemon -Dorg.gradle.java.home=/opt/java/openjdk
 
 # Use a smaller JRE image for runtime
 FROM eclipse-temurin:17-jre-alpine
