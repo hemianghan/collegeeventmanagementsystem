@@ -1,5 +1,5 @@
-# Use Eclipse Temurin JDK 17 as base image
-FROM eclipse-temurin:17-jdk-alpine AS build
+# Use Eclipse Temurin JDK 17
+FROM eclipse-temurin:17-jdk-jammy AS build
 
 # Set working directory
 WORKDIR /app
@@ -10,32 +10,27 @@ COPY gradle gradle
 COPY build.gradle.kts .
 COPY settings.gradle.kts .
 COPY server/build.gradle server/
-COPY server/pom.xml server/
 
 # Copy source code
 COPY server/src server/src
 
-# Make gradlew executable and convert line endings
-RUN chmod +x gradlew && dos2unix gradlew || sed -i 's/\r$//' gradlew
+# Make gradlew executable
+RUN chmod +x gradlew
 
-# Build the application (skip tests for faster build) with Java 17
-RUN ./gradlew :server:build -x test --no-daemon -Dorg.gradle.java.home=/opt/java/openjdk
+# Build with limited memory for free tier
+RUN ./gradlew :server:build -x test --no-daemon --max-workers=1 -Dorg.gradle.jvmargs="-Xmx512m -XX:MaxMetaspaceSize=256m"
 
-# Use a smaller JRE image for runtime
-FROM eclipse-temurin:17-jre-alpine
+# Use runtime image
+FROM eclipse-temurin:17-jre-jammy
 
-# Set working directory
 WORKDIR /app
 
-# Copy the built jar from build stage
+# Copy the built jar
 COPY --from=build /app/server/build/libs/*.jar app.jar
 
-# Expose port 8080
+# Expose port
 EXPOSE 8080
 
-# Set environment variable for port
-ENV PORT=8080
-
-# Run the application
-ENTRYPOINT ["java", "-jar", "app.jar"]
+# Run with limited memory
+ENTRYPOINT ["java", "-Xmx400m", "-jar", "app.jar"]
 
