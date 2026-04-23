@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Verify Setup</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .result { padding: 15px; margin: 10px 0; border-radius: 8px; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .count { font-size: 24px; font-weight: bold; color: #007bff; }
+    </style>
+</head>
+<body>
+    <h1>🔧 Registration Setup Verification</h1>
+    
+    <button onclick="verifySetup()">🧪 Verify Complete Setup</button>
+    
+    <div id="results"></div>
+
+    <script>
+        async function verifySetup() {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<div class="result">🔄 Checking setup...</div>';
+            
+            try {
+                // Test 1: Student Panel - My Registration (should be 12)
+                const studentResponse = await fetch('http://localhost:8080/api/registrations/user/1001/detailed');
+                const studentData = await studentResponse.json();
+                const studentCount = studentData.length;
+                
+                // Test 2: Admin Panel - Get first event and count registrations (should be 10)
+                const eventsResponse = await fetch('http://localhost:8080/api/events');
+                const events = await eventsResponse.json();
+                
+                let adminCount = 0;
+                let eventTitle = '';
+                if (events.length > 0) {
+                    const firstEvent = events[0];
+                    eventTitle = firstEvent.title;
+                    const adminResponse = await fetch(`http://localhost:8080/api/registrations/event/${firstEvent.id}`);
+                    const adminData = await adminResponse.json();
+                    adminCount = adminData.length;
+                }
+                
+                // Display results
+                let html = `
+                    <div class="result ${studentCount === 12 ? 'success' : 'error'}">
+                        <h3>👨‍🎓 STUDENT PANEL TEST</h3>
+                        <p><strong>My Registration Count:</strong> <span class="count">${studentCount}</span></p>
+                        <p>${studentCount === 12 ? '✅ Perfect! Student will see 12 registrations' : '❌ Expected 12, got ' + studentCount}</p>
+                    </div>
+                    
+                    <div class="result ${adminCount === 10 ? 'success' : 'error'}">
+                        <h3>👨‍💼 ADMIN PANEL TEST</h3>
+                        <p><strong>Event:</strong> ${eventTitle}</p>
+                        <p><strong>Registrations per Event:</strong> <span class="count">${adminCount}</span></p>
+                        <p>${adminCount === 10 ? '✅ Perfect! Each event has 10 registrations' : '❌ Expected 10, got ' + adminCount}</p>
+                    </div>
+                `;
+                
+                if (studentCount === 12 && adminCount === 10) {
+                    html += `
+                        <div class="result success">
+                            <h3>🎉 SETUP COMPLETE!</h3>
+                            <p><strong>✅ Student Panel:</strong> Shows 12 registrations in "My Registration"</p>
+                            <p><strong>✅ Admin Panel:</strong> Shows 10 registrations per event in "Student Registration"</p>
+                            <p><strong>🔗 Test Login:</strong> <a href="http://localhost:8080/login.html" target="_blank">student@college.edu</a></p>
+                        </div>
+                    `;
+                }
+                
+                resultsDiv.innerHTML = html;
+                
+            } catch (error) {
+                resultsDiv.innerHTML = `<div class="result error">❌ Error: ${error.message}</div>`;
+            }
+        }
+        
+        // Auto-run verification
+        setTimeout(verifySetup, 1000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.college.event.StarRatingInterfaceBugTest" tests="4" skipped="0" failures="4" errors="0" timestamp="2026-04-23T05:16:20.788Z" hostname="DESKTOP-1E42O8O" time="10.961">
+  <properties/>
+  <testcase name="testBugCondition StarRatingInterfaceBug" classname="com.college.event.StarRatingInterfaceBugTest" time="0.36">
+    <failure message="java.lang.NullPointerException: Cannot invoke &quot;com.college.event.model.User.getId()&quot; because &quot;this.testUser&quot; is null" type="java.lang.NullPointerException">java.lang.NullPointerException: Cannot invoke &quot;com.college.event.model.User.getId()&quot; because &quot;this.testUser&quot; is null
+	at com.college.event.StarRatingInterfaceBugTest.testBugCondition_StarRatingInterfaceBug(StarRatingInterfaceBugTest.java:117)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at net.jqwik.engine.execution.CheckedPropertyFactory.lambda$createRawFunction$1(CheckedPropertyFactory.java:84)
+	at net.jqwik.engine.execution.CheckedPropertyFactory.lambda$createRawFunction$2(CheckedPropertyFactory.java:91)
+	at net.jqwik.engine.properties.CheckedFunction.execute(CheckedFunction.java:17)
+	at net.jqwik.api.lifecycle.AroundTryHook.lambda$static$0(AroundTryHook.java:57)
+	at net.jqwik.engine.execution.lifecycle.HookSupport.lambda$wrap$2(HookSupport.java:48)
+	at net.jqwik.engine.hooks.lifecycle.TryLifecycleMethodsHook.aroundTry(TryLifecycleMethodsHook.java:56)
+	at net.jqwik.engine.execution.lifecycle.HookSupport.lambda$wrap$3(HookSupport.java:53)
+	at net.jqwik.engine.execution.lifecycle.HookSupport.lambda$wrap$2(HookSupport.java:48)
+	at net.jqwik.engine.hooks.lifecycle.BeforeTryMembersHook.aroundTry(BeforeTryMembersHook.java:69)
+	at net.jqwik.engine.execution.lifecycle.HookSupport.lambda$wrap$3(HookSupport.java:53)
+	at net.jqwik.engine.execution.CheckedPropertyFactory.lambda$createTryExecutor$0(CheckedPropertyFactory.java:60)
+	at net.jqwik.engine.execution.lifecycle.AroundTryLifecycle.execute(AroundTryLifecycle.java:23)
+	at net.jqwik.engine.properties.GenericProperty.testPredicate(GenericProperty.java:166)
+	at net.jqwik.engine.properties.GenericProperty.check(GenericProperty.java:68)
+	at net.jqwik.engine.execution.CheckedProperty.check(CheckedProperty.java:67)
+	at net.jqwik.engine.execution.PropertyMethodExecutor.executeProperty(PropertyMethodExecutor.java:90)
+	at net.jqwik.engine.execution.PropertyMethodExecutor.executeMethod(PropertyMethodExecutor.java:69)
+	at net.jqwik.engine.execution.PropertyMethodExecutor.lambda$execute$0(PropertyMethodExecutor.java:49)
+	at net.jqwik.api.lifecycle.AroundPropertyHook.lambda$static$0(AroundPropertyHook.java:46)
+	at net.jqwik.engine.execution.lifecycle.HookSupport.lambda$wrap$0(HookSupport.java:26)
+	at net.jqwik.api.lifecycle.PropertyExecutor.executeAndFinally(PropertyExecutor.java:39)
+	at net.jqwik.engine.hooks.lifecycle.PropertyLifecycleMethodsHook.aroundProperty(PropertyLifecycleMethodsHook.java:56)
+	at net.jqwik.engine.execution.lifecycle.HookSupport.lambda$wrap$1(HookSupport.java:31)
+	at net.jqwik.engine.execution.lifecycle.HookSupport.lambda$wrap$0(HookSupport.java:26)
+	at net.jqwik.engine.hooks.statistics.StatisticsHook.aroundProperty(StatisticsHook.java:37)
+	at net.jqwik.engine.execution.lifecycle.HookSupport.lambda$wrap$1(HookSupport.java:31)
+	at net.jqwik.engine.execution.lifecycle.HookSupport.lambda$wrap$0(HookSupport.java:26)
+	at net.jqwik.engine.hooks.lifecycle.AutoCloseableHook.aroundProperty(AutoCloseableHook.java:13)
+	at net.jqwik.engine.execution.lifecycle.HookSupport.lambda$wrap$1(HookSupport.java:31)
+	at net.jqwik.engine.execution.PropertyMethodExecutor.execute(PropertyMethodExecutor.java:47)
+	at net.jqwik.engine.execution.PropertyTaskCreator.executeTestMethod(PropertyTaskCreator.java:166)
+	at net.jqwik.engine.execution.PropertyTaskCreator.lambda$createTask$1(PropertyTaskCreator.java:51)
+	at net.jqwik.engine.execution.lifecycle.CurrentDomainContext.runWithContext(CurrentDomainContext.java:28)
+	at net.jqwik.engine.execution.PropertyTaskCreator.lambda$createTask$2(PropertyTaskCreator.java:50)
+	at net.jqwik.engine.execution.pipeline.ExecutionTask$1.lambda$execute$0(ExecutionTask.java:31)
+	at net.jqwik.engine.execution.lifecycle.CurrentTestDescriptor.runWithDescriptor(CurrentTestDescriptor.java:17)
+	at net.jqwik.engine.execution.pipeline.ExecutionTask$1.execute(ExecutionTask.java:31)
+	at net.jqwik.engine.execution.pipeline.ExecutionPipeline.runToTermination(ExecutionPipeline.java:82)
+	at net.jqwik.engine.execution.JqwikExecutor.execute(JqwikExecutor.java:46)
+	at net.jqwik.engine.JqwikTestEngine.executeTests(JqwikTestEngine.java:70)
+	at net.jqwik.engine.JqwikTestEngine.execute(JqwikTestEngine.java:53)
+</failure>
+  </testcase>
+  <testcase name="testBugCondition_StarRatingStartsEmptyAndShowsPopup()" classname="com.college.event.StarRatingInterfaceBugTest" time="0.63">
+    <failure message="org.opentest4j.AssertionFailedError: STAR RATING EMPTY STATE BUG CONFIRMED! Dashboard star rating interface should start empty (no stars selected). Expected: star.empty class or selectedRating = 0 initialization. Found: No empty star state initialization in dashboard. This confirms the bug - star rating doesn't start empty as required." type="org.opentest4j.AssertionFailedError">org.opentest4j.AssertionFailedError: STAR RATING EMPTY STATE BUG CONFIRMED! Dashboard star rating interface should start empty (no stars selected). Expected: star.empty class or selectedRating = 0 initialization. Found: No empty star state initialization in dashboard. This confirms the bug - star rating doesn't start empty as required.
+	at org.junit.jupiter.api.AssertionUtils.fail(AssertionUtils.java:38)
+	at org.junit.jupiter.api.Assertions.fail(Assertions.java:138)
+	at com.college.event.StarRatingInterfaceBugTest.testBugCondition_StarRatingStartsEmptyAndShowsPopup(StarRatingInterfaceBugTest.java:323)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+</failure>
+  </testcase>
+  <testcase name="testBugCondition_StarRatingInterface_DashboardContext()" classname="com.college.event.StarRatingInterfaceBugTest" time="0.055">
+    <failure message="org.opentest4j.AssertionFailedError: STAR RATING INTERFACE BUG CONFIRMED! Dashboard.html is missing star rating interface elements. Expected: .rating-star or .rating-input classes for star selection. Found: Neither rating-star nor rating-input classes exist in dashboard. This confirms the bug - no star rating interface in dashboard context." type="org.opentest4j.AssertionFailedError">org.opentest4j.AssertionFailedError: STAR RATING INTERFACE BUG CONFIRMED! Dashboard.html is missing star rating interface elements. Expected: .rating-star or .rating-input classes for star selection. Found: Neither rating-star nor rating-input classes exist in dashboard. This confirms the bug - no star rating interface in dashboard context.
+	at org.junit.jupiter.api.AssertionUtils.fail(AssertionUtils.java:38)
+	at org.junit.jupiter.api.Assertions.fail(Assertions.java:138)
+	at com.college.event.StarRatingInterfaceBugTest.testBugCondition_StarRatingInterface_DashboardContext(StarRatingInterfaceBugTest.java:235)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+</failure>
+  </testcase>
+  <testcase name="testBugCondition_StarRatingAvailableInDashboardNotJustReviewBoard()" classname="com.college.event.StarRatingInterfaceBugTest" time="0.035">
+    <failure message="org.opentest4j.AssertionFailedError: STAR RATING DASHBOARD CONTEXT BUG CONFIRMED! Star rating functionality exists in review-board.html but is missing from dashboard.html. Users should be able to rate events from the main dashboard, not just the review board. Expected: Star rating interface integrated into dashboard context. Found: Star rating only available in separate review-board page. This confirms the bug - star rating interface is not available in dashboard context." type="org.opentest4j.AssertionFailedError">org.opentest4j.AssertionFailedError: STAR RATING DASHBOARD CONTEXT BUG CONFIRMED! Star rating functionality exists in review-board.html but is missing from dashboard.html. Users should be able to rate events from the main dashboard, not just the review board. Expected: Star rating interface integrated into dashboard context. Found: Star rating only available in separate review-board page. This confirms the bug - star rating interface is not available in dashboard context.
+	at org.junit.jupiter.api.AssertionUtils.fail(AssertionUtils.java:38)
+	at org.junit.jupiter.api.Assertions.fail(Assertions.java:138)
+	at com.college.event.StarRatingInterfaceBugTest.testBugCondition_StarRatingAvailableInDashboardNotJustReviewBoard(StarRatingInterfaceBugTest.java:386)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+</failure>
+  </testcase>
+  <system-out><![CDATA[timestamp = 2026-04-23T10:46:21.135175800, StarRatingInterfaceBugTest:testBugCondition StarRatingInterfaceBug = 
+  java.lang.NullPointerException:
+    Cannot invoke "com.college.event.model.User.getId()" because "this.testUser" is null
+
+                              |-----------------------jqwik-----------------------
+tries = 1                     | # of calls to property
+checks = 1                    | # of not rejected calls
+generation = EXHAUSTIVE       | parameters are exhaustively generated
+after-failure = SAMPLE_FIRST  | try previously failed sample, then previous seed
+when-fixed-seed = ALLOW       | fixing the random seed is allowed
+edge-cases#mode = MIXIN       | edge cases are mixed in
+edge-cases#total = 0          | # of all combined edge cases
+edge-cases#tried = 0          | # of edge cases tried in current run
+seed = 2415835516240552794    | random seed to reproduce generated values
+
+Sample
+------
+  scenario:
+    RatingInteractionScenario{type='click_empty_stars', desc='User clicks on empty star rating'}
+
+
+10:46:21.399 [Test worker] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [com.college.event.StarRatingInterfaceBugTest]: StarRatingInterfaceBugTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+10:46:21.508 [Test worker] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.college.event.EventApplication for test class com.college.event.StarRatingInterfaceBugTest
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.4.1)
+
+2026-04-23T10:46:21.996+05:30  INFO 9200 --- [college-event-management] [    Test worker] c.c.event.StarRatingInterfaceBugTest     : Starting StarRatingInterfaceBugTest using Java 21.0.7 with PID 9200 (started by DELL in D:\hemi\collegeeventmanagementsystem\server)
+2026-04-23T10:46:21.998+05:30  INFO 9200 --- [college-event-management] [    Test worker] c.c.event.StarRatingInterfaceBugTest     : The following 1 profile is active: "test"
+2026-04-23T10:46:22.861+05:30  INFO 9200 --- [college-event-management] [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-04-23T10:46:22.946+05:30  INFO 9200 --- [college-event-management] [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 61 ms. Found 6 JPA repository interfaces.
+2026-04-23T10:46:23.861+05:30  INFO 9200 --- [college-event-management] [    Test worker] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-04-23T10:46:23.955+05:30  INFO 9200 --- [college-event-management] [    Test worker] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.4.Final
+2026-04-23T10:46:23.995+05:30  INFO 9200 --- [college-event-management] [    Test worker] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-04-23T10:46:24.367+05:30  INFO 9200 --- [college-event-management] [    Test worker] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-04-23T10:46:24.410+05:30  INFO 9200 --- [college-event-management] [    Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-04-23T10:46:24.588+05:30  INFO 9200 --- [college-event-management] [    Test worker] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:testdb user=SA
+2026-04-23T10:46:24.589+05:30  INFO 9200 --- [college-event-management] [    Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-04-23T10:46:24.616+05:30  WARN 9200 --- [college-event-management] [    Test worker] org.hibernate.orm.deprecation            : HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-04-23T10:46:24.642+05:30  INFO 9200 --- [college-event-management] [    Test worker] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 2.3.232
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-04-23T10:46:25.661+05:30  INFO 9200 --- [college-event-management] [    Test worker] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-04-23T10:46:25.712+05:30  INFO 9200 --- [college-event-management] [    Test worker] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-04-23T10:46:26.999+05:30  WARN 9200 --- [college-event-management] [    Test worker] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-04-23T10:46:27.027+05:30  INFO 9200 --- [college-event-management] [    Test worker] o.s.b.a.w.s.WelcomePageHandlerMapping    : Adding welcome page: class path resource [static/index.html]
+2026-04-23T10:46:27.949+05:30  INFO 9200 --- [college-event-management] [    Test worker] c.c.event.StarRatingInterfaceBugTest     : Started StarRatingInterfaceBugTest in 6.278 seconds (process running for 8.173)
+Clean Admin Created: hemishaanghan1@gmail.com
+40 Events Seeded Successfully!
+- 20 Past Events (before 2026-04-23)
+- 20 Current Events (2026-04-23 and after)
+- 10 Cultural, 10 Technical, 10 Sports, 10 Fun
+6 Sample Certificates Generated for Past Events!
+College: Shree Swami Atmanand Saraswati Institute of Technology (SSASIT)
+Student Names: Different for each certificate
+Authorized Signatures: Random for each certificate
+Sample Notifications Generated!
+400 Sample Registrations Generated!
+- 10 registrations per event
+- Total events: 40
+- Different student names for variety
+2026-04-23T10:46:29.680+05:30  INFO 9200 --- [college-event-management] [    Test worker] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
+2026-04-23T10:46:29.680+05:30  INFO 9200 --- [college-event-management] [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-04-23T10:46:29.682+05:30  INFO 9200 --- [college-event-management] [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 1 ms
+=== STAR RATING POPUP BEHAVIOR TEST ===
+Testing that star rating starts empty and shows popup when clicked
+Empty star state: false
+Popup show logic: false
+Star click handling: false
+2026-04-23T10:46:29.781+05:30  INFO 9200 --- [college-event-management] [    Test worker] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-04-23T10:46:29.787+05:30  INFO 9200 --- [college-event-management] [    Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-04-23T10:46:29.790+05:30  INFO 9200 --- [college-event-management] [    Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.4.1)
+
+2026-04-23T10:46:29.832+05:30  INFO 9200 --- [college-event-management] [    Test worker] c.c.event.StarRatingInterfaceBugTest     : Starting StarRatingInterfaceBugTest using Java 21.0.7 with PID 9200 (started by DELL in D:\hemi\collegeeventmanagementsystem\server)
+2026-04-23T10:46:29.832+05:30  INFO 9200 --- [college-event-management] [    Test worker] c.c.event.StarRatingInterfaceBugTest     : The following 1 profile is active: "test"
+2026-04-23T10:46:29.976+05:30  INFO 9200 --- [college-event-management] [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-04-23T10:46:29.991+05:30  INFO 9200 --- [college-event-management] [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 13 ms. Found 6 JPA repository interfaces.
+2026-04-23T10:46:30.084+05:30  INFO 9200 --- [college-event-management] [    Test worker] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-04-23T10:46:30.087+05:30  INFO 9200 --- [college-event-management] [    Test worker] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-04-23T10:46:30.098+05:30  INFO 9200 --- [college-event-management] [    Test worker] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-04-23T10:46:30.099+05:30  INFO 9200 --- [college-event-management] [    Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Starting...
+2026-04-23T10:46:30.100+05:30  INFO 9200 --- [college-event-management] [    Test worker] com.zaxxer.hikari.pool.HikariPool        : HikariPool-2 - Added connection conn10: url=jdbc:h2:mem:testdb user=SA
+2026-04-23T10:46:30.100+05:30  INFO 9200 --- [college-event-management] [    Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Start completed.
+2026-04-23T10:46:30.101+05:30  WARN 9200 --- [college-event-management] [    Test worker] org.hibernate.orm.deprecation            : HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-04-23T10:46:30.101+05:30  INFO 9200 --- [college-event-management] [    Test worker] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-2)']
+	Database driver: undefined/unknown
+	Database version: 2.3.232
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-04-23T10:46:30.277+05:30  INFO 9200 --- [college-event-management] [    Test worker] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-04-23T10:46:30.284+05:30  INFO 9200 --- [college-event-management] [    Test worker] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-04-23T10:46:30.470+05:30  WARN 9200 --- [college-event-management] [    Test worker] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-04-23T10:46:30.479+05:30  INFO 9200 --- [college-event-management] [    Test worker] o.s.b.a.w.s.WelcomePageHandlerMapping    : Adding welcome page: class path resource [static/index.html]
+2026-04-23T10:46:30.619+05:30  INFO 9200 --- [college-event-management] [    Test worker] c.c.event.StarRatingInterfaceBugTest     : Started StarRatingInterfaceBugTest in 0.816 seconds (process running for 10.843)
+Clean Admin Created: hemishaanghan1@gmail.com
+40 Events Seeded Successfully!
+- 20 Past Events (before 2026-04-23)
+- 20 Current Events (2026-04-23 and after)
+- 10 Cultural, 10 Technical, 10 Sports, 10 Fun
+6 Sample Certificates Generated for Past Events!
+College: Shree Swami Atmanand Saraswati Institute of Technology (SSASIT)
+Student Names: Different for each certificate
+Authorized Signatures: Random for each certificate
+Sample Notifications Generated!
+400 Sample Registrations Generated!
+- 10 registrations per event
+- Total events: 40
+- Different student names for variety
+2026-04-23T10:46:30.865+05:30  INFO 9200 --- [college-event-management] [    Test worker] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
+2026-04-23T10:46:30.865+05:30  INFO 9200 --- [college-event-management] [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-04-23T10:46:30.866+05:30  INFO 9200 --- [college-event-management] [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 1 ms
+=== STAR RATING INTERFACE BUG TEST ===
+User ID: 2
+User registrations: 1
+Test event: Test Event for Rating
+Dashboard has any rating content: true
+Rating star class: false
+Rating input class: false
+Star emoji: false
+Rating popup logic: false
+Rating event listener: true
+Review board import/link: true
+2026-04-23T10:46:30.911+05:30  INFO 9200 --- [college-event-management] [    Test worker] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-04-23T10:46:30.913+05:30  INFO 9200 --- [college-event-management] [    Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Shutdown initiated...
+2026-04-23T10:46:30.914+05:30  INFO 9200 --- [college-event-management] [    Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Shutdown completed.
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.4.1)
+
+2026-04-23T10:46:30.947+05:30  INFO 9200 --- [college-event-management] [    Test worker] c.c.event.StarRatingInterfaceBugTest     : Starting StarRatingInterfaceBugTest using Java 21.0.7 with PID 9200 (started by DELL in D:\hemi\collegeeventmanagementsystem\server)
+2026-04-23T10:46:30.948+05:30  INFO 9200 --- [college-event-management] [    Test worker] c.c.event.StarRatingInterfaceBugTest     : The following 1 profile is active: "test"
+2026-04-23T10:46:31.113+05:30  INFO 9200 --- [college-event-management] [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-04-23T10:46:31.130+05:30  INFO 9200 --- [college-event-management] [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 15 ms. Found 6 JPA repository interfaces.
+2026-04-23T10:46:31.199+05:30  INFO 9200 --- [college-event-management] [    Test worker] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-04-23T10:46:31.202+05:30  INFO 9200 --- [college-event-management] [    Test worker] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-04-23T10:46:31.218+05:30  INFO 9200 --- [college-event-management] [    Test worker] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-04-23T10:46:31.219+05:30  INFO 9200 --- [college-event-management] [    Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-3 - Starting...
+2026-04-23T10:46:31.220+05:30  INFO 9200 --- [college-event-management] [    Test worker] com.zaxxer.hikari.pool.HikariPool        : HikariPool-3 - Added connection conn20: url=jdbc:h2:mem:testdb user=SA
+2026-04-23T10:46:31.221+05:30  INFO 9200 --- [college-event-management] [    Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-3 - Start completed.
+2026-04-23T10:46:31.222+05:30  WARN 9200 --- [college-event-management] [    Test worker] org.hibernate.orm.deprecation            : HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-04-23T10:46:31.223+05:30  INFO 9200 --- [college-event-management] [    Test worker] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-3)']
+	Database driver: undefined/unknown
+	Database version: 2.3.232
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-04-23T10:46:31.344+05:30  INFO 9200 --- [college-event-management] [    Test worker] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-04-23T10:46:31.348+05:30  INFO 9200 --- [college-event-management] [    Test worker] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-04-23T10:46:31.470+05:30  WARN 9200 --- [college-event-management] [    Test worker] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-04-23T10:46:31.476+05:30  INFO 9200 --- [college-event-management] [    Test worker] o.s.b.a.w.s.WelcomePageHandlerMapping    : Adding welcome page: class path resource [static/index.html]
+2026-04-23T10:46:31.549+05:30  INFO 9200 --- [college-event-management] [    Test worker] c.c.event.StarRatingInterfaceBugTest     : Started StarRatingInterfaceBugTest in 0.629 seconds (process running for 11.772)
+Clean Admin Created: hemishaanghan1@gmail.com
+40 Events Seeded Successfully!
+- 20 Past Events (before 2026-04-23)
+- 20 Current Events (2026-04-23 and after)
+- 10 Cultural, 10 Technical, 10 Sports, 10 Fun
+6 Sample Certificates Generated for Past Events!
+College: Shree Swami Atmanand Saraswati Institute of Technology (SSASIT)
+Student Names: Different for each certificate
+Authorized Signatures: Random for each certificate
+Sample Notifications Generated!
+400 Sample Registrations Generated!
+- 10 registrations per event
+- Total events: 40
+- Different student names for variety
+2026-04-23T10:46:31.717+05:30  INFO 9200 --- [college-event-management] [    Test worker] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
+2026-04-23T10:46:31.717+05:30  INFO 9200 --- [college-event-management] [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-04-23T10:46:31.718+05:30  INFO 9200 --- [college-event-management] [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 1 ms
+=== STAR RATING DASHBOARD CONTEXT TEST ===
+Testing that star rating is available in dashboard, not just review-board
+Review-board has star rating: true
+Dashboard has star rating: false
+2026-04-23T10:46:31.745+05:30  INFO 9200 --- [college-event-management] [    Test worker] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-04-23T10:46:31.747+05:30  INFO 9200 --- [college-event-management] [    Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-3 - Shutdown initiated...
+2026-04-23T10:46:31.747+05:30  INFO 9200 --- [college-event-management] [    Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-3 - Shutdown completed.
+]]></system-out>
+  <system-err><![CDATA[Mockito is currently self-attaching to enable the inline-mock-maker. This will no longer work in future releases of the JDK. Please add Mockito as an agent to your build what is described in Mockito's documentation: https://javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mockito.html#0.3
+WARNING: A Java agent has been loaded dynamically (C:\Users\DELL\.gradle\caches\modules-2\files-2.1\net.bytebuddy\byte-buddy-agent\1.15.11\a38b16385e867f59a641330f0362ebe742788ed8\byte-buddy-agent-1.15.11.jar)
+WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning
+WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information
+WARNING: Dynamic loading of agents will be disallowed by default in a future release
+]]></system-err>
+</testsuite>

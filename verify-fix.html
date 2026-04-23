@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>🔍 Verify Registration Fix</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            max-width: 800px; 
+            margin: 0 auto; 
+            padding: 20px; 
+            background: #f5f7fa;
+        }
+        .card { 
+            background: white; 
+            padding: 20px; 
+            margin: 15px 0; 
+            border-radius: 10px; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .success { border-left: 5px solid #28a745; }
+        .error { border-left: 5px solid #dc3545; }
+        .warning { border-left: 5px solid #ffc107; }
+        .info { border-left: 5px solid #17a2b8; }
+        button { 
+            background: #667eea; 
+            color: white; 
+            border: none; 
+            padding: 12px 24px; 
+            border-radius: 5px; 
+            cursor: pointer; 
+            margin: 5px;
+            font-size: 14px;
+        }
+        button:hover { background: #5a6fd8; }
+        .big-button { 
+            font-size: 18px; 
+            padding: 15px 30px; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        pre { 
+            background: #f8f9fa; 
+            padding: 10px; 
+            border-radius: 5px; 
+            overflow-x: auto;
+            font-size: 12px;
+        }
+        .status { 
+            display: inline-block; 
+            padding: 4px 8px; 
+            border-radius: 4px; 
+            font-size: 12px; 
+            font-weight: bold;
+        }
+        .pass { background: #d4edda; color: #155724; }
+        .fail { background: #f8d7da; color: #721c24; }
+        .loading { color: #666; }
+    </style>
+</head>
+<body>
+    <div class="card info">
+        <h1>🔍 Registration Count Fix Verification</h1>
+        <p>This tool will verify that the student registration count fix is working correctly.</p>
+    </div>
+
+    <div class="card">
+        <h2>🚀 Quick Fix & Test</h2>
+        <button class="big-button" onclick="runFullTest()">🔧 Fix & Test Everything</button>
+        <p><small>This will clear old data, create sample registrations, and test the student count.</small></p>
+    </div>
+
+    <div class="card">
+        <h2>📊 Individual Tests</h2>
+        <button onclick="testCurrentCount()">📋 Check Current Count</button>
+        <button onclick="clearData()">🗑️ Clear All Data</button>
+        <button onclick="createSampleData()">➕ Create Sample Data</button>
+        <button onclick="testStudentLogin()">👤 Test Student View</button>
+    </div>
+
+    <div id="results"></div>
+
+    <div class="card info">
+        <h3>📝 Manual Test Steps</h3>
+        <ol>
+            <li><strong>Login as Student:</strong> <code>student@college.edu</code> / any password</li>
+            <li><strong>Check "My Events":</strong> Should show 12 registrations</li>
+            <li><strong>Login as Admin:</strong> <code>hemishaanghan1@gmail.com</code> / <code>admin123</code></li>
+            <li><strong>Check Admin Panel:</strong> Should show all registrations</li>
+        </ol>
+        <p>
+            <a href="/login.html" target="_blank">🔗 Open Login Page</a> | 
+            <a href="/dashboard.html" target="_blank">🔗 Open Dashboard</a>
+        </p>
+    </div>
+
+    <script>
+        function addResult(title, content, type = 'info') {
+            const results = document.getElementById('results');
+            const div = document.createElement('div');
+            div.className = `card ${type}`;
+            div.innerHTML = `<h3>${title}</h3>${content}`;
+            results.appendChild(div);
+            div.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        async function runFullTest() {
+            addResult('🔄 Starting Full Test...', '<p class="loading">Running complete fix and test sequence...</p>');
+            
+            try {
+                // Step 1: Clear data
+                await clearData(false);
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                // Step 2: Create sample data
+                await createSampleData(false);
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                // Step 3: Test count
+                await testCurrentCount(false);
+                
+                addResult('✅ Full Test Complete!', `
+                    <p><strong>All steps completed successfully!</strong></p>
+                    <p>Next steps:</p>
+                    <ol>
+                        <li>Login as student: <code>student@college.edu</code></li>
+                        <li>Check "My Events" - should show 12 registrations</li>
+                    </ol>
+                    <button onclick="window.open('/login.html', '_blank')">🔗 Open Login Page</button>
+                `, 'success');
+                
+            } catch (error) {
+                addResult('❌ Full Test Failed', `<p>Error: ${error.message}</p>`, 'error');
+            }
+        }
+
+        async function testCurrentCount(showResult = true) {
+            if (showResult) {
+                addResult('📊 Testing Current Count...', '<p class="loading">Checking student registration count...</p>');
+            }
+            
+            try {
+                const response = await fetch('/api/registrations/user/1001/detailed');
+                const registrations = await response.json();
+                const count = registrations.length;
+                
+                const status = count >= 10 && count <= 12 ? 'pass' : 'fail';
+                const statusText = status === 'pass' ? 'PASS ✅' : 'FAIL ❌';
+                
+                if (showResult) {
+                    addResult('📊 Registration Count Test', `
+                        <p><strong>Student ID 1001 Registration Count:</strong> ${count}</p>
+                        <p><strong>Expected:</strong> 10-12 registrations</p>
+                        <p><strong>Status:</strong> <span class="status ${status}">${statusText}</span></p>
+                        ${count === 0 ? '<p><em>No registrations found. Try creating sample data first.</em></p>' : ''}
+                        <details>
+                            <summary>View Registration Details</summary>
+                            <pre>${JSON.stringify(registrations, null, 2)}</pre>
+                        </details>
+                    `, status === 'pass' ? 'success' : 'error');
+                }
+                
+                return { count, status };
+            } catch (error) {
+                if (showResult) {
+                    addResult('❌ Count Test Failed', `<p>Error: ${error.message}</p>`, 'error');
+                }
+                throw error;
+            }
+        }
+
+        async function clearData(showResult = true) {
+            if (showResult) {
+                addResult('🗑️ Clearing Data...', '<p class="loading">Clearing all registration data...</p>');
+            }
+            
+            try {
+                const response = await fetch('/api/registrations/clear-all', {
+                    method: 'DELETE'
+                });
+                const result = await response.json();
+                
+                if (result.success) {
+                    if (showResult) {
+                        addResult('🗑️ Data Cleared', `
+                            <p><strong>Successfully cleared ${result.deletedCount} registrations</strong></p>
+                            <p>All student registration data has been reset.</p>
+                        `, 'success');
+                    }
+                    return result;
+                } else {
+                    throw new Error(result.message);
+                }
+            } catch (error) {
+                if (showResult) {
+                    addResult('❌ Clear Failed', `<p>Error: ${error.message}</p>`, 'error');
+                }
+                throw error;
+            }
+        }
+
+        async function createSampleData(showResult = true) {
+            if (showResult) {
+                addResult('➕ Creating Sample Data...', '<p class="loading">Creating sample student registrations...</p>');
+            }
+            
+            try {
+                const response = await fetch('/api/registrations/create-sample', {
+                    method: 'POST'
+                });
+                const result = await response.json();
+                
+                if (result.success) {
+                    if (showResult) {
+                        addResult('➕ Sample Data Created', `
+                            <p><strong>Created ${result.registrationCount} sample registrations</strong></p>
+                            <p><strong>Test Student:</strong> ${result.studentEmail}</p>
+                            <p>Sample data is ready for testing!</p>
+                        `, 'success');
+                    }
+                    return result;
+                } else {
+                    throw new Error(result.message);
+                }
+            } catch (error) {
+                if (showResult) {
+                    addResult('❌ Sample Creation Failed', `<p>Error: ${error.message}</p>`, 'error');
+                }
+                throw error;
+            }
+        }
+
+        async function testStudentLogin() {
+            addResult('👤 Student Login Test', `
+                <p>To test the student view:</p>
+                <ol>
+                    <li>Click the button below to open login page</li>
+                    <li>Login with: <code>student@college.edu</code> / any password</li>
+                    <li>Select "Student" role</li>
+                    <li>Click "My Events" in sidebar</li>
+                    <li>Verify you see 12 registrations (not 401)</li>
+                </ol>
+                <button onclick="window.open('/login.html', '_blank')">🔗 Open Login Page</button>
+                <button onclick="window.open('/dashboard.html', '_blank')">🔗 Open Dashboard</button>
+            `, 'info');
+        }
+
+        // Auto-run initial test on page load
+        window.addEventListener('load', () => {
+            setTimeout(testCurrentCount, 1000);
+        });
+    </script>
+</body>
+</html>

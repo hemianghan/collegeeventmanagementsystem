@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Notifications & Events</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f5f7fa;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+        }
+        .success {
+            border-color: #28a745;
+            background: #d4edda;
+        }
+        .error {
+            border-color: #dc3545;
+            background: #f8d7da;
+        }
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #5a6fd8;
+        }
+        .result {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Debug Notifications & Events</h1>
+        <p>Debugging notification display and past events registration issues</p>
+
+        <div class="grid">
+            <div class="section" id="section1">
+                <h3>1. Check Users & Notifications</h3>
+                <button onclick="checkUsersAndNotifications()">Check Users & Notifications</button>
+                <div class="result" id="result1"></div>
+            </div>
+
+            <div class="section" id="section2">
+                <h3>2. Check Events & Registrations</h3>
+                <button onclick="checkEventsAndRegistrations()">Check Events & Registrations</button>
+                <div class="result" id="result2"></div>
+            </div>
+        </div>
+
+        <div class="section" id="section3">
+            <h3>3. Fix Notifications for Students</h3>
+            <button onclick="fixNotificationsForStudents()">Send Test Notifications to All Students</button>
+            <div class="result" id="result3"></div>
+        </div>
+
+        <div class="section" id="section4">
+            <h3>4. Add Past Event Registrations</h3>
+            <button onclick="addPastEventRegistrations()">Add Past Event Registrations to Students</button>
+            <div class="result" id="result4"></div>
+        </div>
+
+        <div class="section" id="section5">
+            <h3>5. Test Student Panel View</h3>
+            <button onclick="testStudentPanelView()">Simulate Student Panel Data</button>
+            <div class="result" id="result5"></div>
+        </div>
+    </div>
+
+    <script>
+        async function checkUsersAndNotifications() {
+            const resultDiv = document.getElementById('result1');
+            const sectionDiv = document.getElementById('section1');
+            
+            try {
+                resultDiv.textContent = 'Checking users and notifications...';
+                
+                // Get all users
+                const usersResponse = await fetch('/api/users');
+                const users = await usersResponse.json();
+                
+                // Get notifications for each student
+                const students = users.filter(u => u.role === 'Student');
+                let notificationSummary = '';
+                
+                for (const student of students.slice(0, 3)) { // Check first 3 students
+                    const notifResponse = await fetch(`/api/notifications/user/${student.id}`);
+                    const notifications = await notifResponse.json();
+                    notificationSummary += `\n- ${student.name} (ID: ${student.id}): ${notifications.length} notifications`;
+                }
+                
+                resultDiv.textContent = `✅ SUCCESS!\n\nUsers found: ${users.length}\nStudents: ${students.length}\nAdmins: ${users.filter(u => u.role === 'Admin').length}\n\nNotification Summary:${notificationSummary}\n\nSample Student:\n${JSON.stringify(students[0] || {}, null, 2)}`;
+                sectionDiv.className = 'section success';
+                
+            } catch (error) {
+                resultDiv.textContent = `❌ ERROR: ${error.message}`;
+                sectionDiv.className = 'section error';
+            }
+        }
+
+        async function checkEventsAndRegistrations() {
+            const resultDiv = document.getElementById('result2');
+            const sectionDiv = document.getElementById('section2');
+            
+            try {
+                resultDiv.textContent = 'Checking events and registrations...';
+                
+                // Get all events
+                const eventsResponse = await fetch('/api/events');
+                const events = await eventsResponse.json();
+                
+                // Check registrations for test student
+                const testStudentId = 1001; // Known test student
+                const regResponse = await fetch(`/api/registrations/user/${testStudentId}/detailed`);
+                const registrations = await regResponse.json();
+                
+                // Categorize events by date
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                
+                const pastEvents = events.filter(event => new Date(event.date) < today);
+                const futureEvents = events.filter(event => new Date(event.date) >= today);
+                
+                resultDiv.textContent = `✅ SUCCESS!\n\nEvents Summary:\n- Total events: ${events.length}\n- Past events: ${pastEvents.length}\n- Future events: ${futureEvents.length}\n\nTest Student (ID: ${testStudentId}):\n- Current registrations: ${registrations.length}\n\nSample Past Event:\n${JSON.stringify(pastEvents[0] || {}, null, 2)}`;
+                sectionDiv.className = 'section success';
+                
+            } catch (error) {
+                resultDiv.textContent = `❌ ERROR: ${error.message}`;
+                sectionDiv.className = 'section error';
+            }
+        }
+
+        async function fixNotificationsForStudents() {
+            const resultDiv = document.getElementById('result3');
+            const sectionDiv = document.getElementById('section3');
+            
+            try {
+                resultDiv.textContent = 'Sending test notifications to all students...';
+                
+                // Get all students
+                const usersResponse = await fetch('/api/users');
+                const users = await usersResponse.json();
+                const students = users.filter(u => u.role === 'Student');
+                
+                let successCount = 0;
+                let failCount = 0;
+                
+                // Send a test notification to each student
+                for (const student of students) {
+                    try {
+                        const notification = {
+                            userId: student.id,
+                            userName: student.name,
+                            userEmail: student.email,
+                            title: "System Test Notification",
+                            message: "This is a test notification to verify the notification system is working correctly for your account.",
+                            type: "INFO",
+                            isRead: false
+                        };
+                        
+                        const response = await fetch('/api/notifications', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(notification)
+                        });
+                        
+                        if (response.ok) {
+                            successCount++;
+                        } else {
+                            failCount++;
+                        }
+                    } catch (error) {
+                        failCount++;
+                    }
+                }
+                
+                resultDiv.textContent = `✅ SUCCESS!\n\nTest notifications sent:\n- Total students: ${students.length}\n- Successfully sent: ${successCount}\n- Failed: ${failCount}\n\nNow login as a student to check if notifications appear!`;
+                sectionDiv.className = 'section success';
+                
+            } catch (error) {
+                resultDiv.textContent = `❌ ERROR: ${error.message}`;
+                sectionDiv.className = 'section error';
+            }
+        }
+
+        async function addPastEventRegistrations() {
+            const resultDiv = document.getElementById('result4');
+            const sectionDiv = document.getElementById('section4');
+            
+            try {
+                resultDiv.textContent = 'Adding past event registrations for students...';
+                
+                // Get all events and students
+                const eventsResponse = await fetch('/api/events');
+                const events = await eventsResponse.json();
+                
+                const usersResponse = await fetch('/api/users');
+                const users = await usersResponse.json();
+                const students = users.filter(u => u.role === 'Student');
+                
+                // Filter past events
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                const pastEvents = events.filter(event => new Date(event.date) < today);
+                
+                let registrationCount = 0;
+                
+                // Add registrations for first 2 students to past events
+                for (const student of students.slice(0, 2)) {
+                    // Register for 5-8 past events
+                    const eventsToRegister = pastEvents.slice(0, Math.min(8, pastEvents.length));
+                    
+                    for (const event of eventsToRegister) {
+                        try {
+                            // Check if already registered
+                            const existingResponse = await fetch(`/api/registrations/user/${student.id}`);
+                            const existingRegistrations = await existingResponse.json();
+                            const alreadyRegistered = existingRegistrations.some(reg => reg.eventId === event.id);
+                            
+                            if (!alreadyRegistered) {
+                                const registrationData = {
+                                    userId: student.id,
+                                    eventId: event.id,
+                                    userName: student.name,
+                                    userEmail: student.email,
+                                    paymentMethod: "DESK"
+                                };
+                                
+                                const response = await fetch('/api/registrations/register', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify(registrationData)
+                                });
+                                
+                                if (response.ok) {
+                                    registrationCount++;
+                                }
+                            }
+                        } catch (error) {
+                            console.error(`Error registering ${student.email} for ${event.title}:`, error);
+                        }
+                    }
+                }
+                
+                resultDiv.textContent = `✅ SUCCESS!\n\nPast event registrations added:\n- Past events available: ${pastEvents.length}\n- Students processed: ${students.slice(0, 2).length}\n- New registrations created: ${registrationCount}\n\nStudents can now see past events in "My Events"!`;
+                sectionDiv.className = 'section success';
+                
+            } catch (error) {
+                resultDiv.textContent = `❌ ERROR: ${error.message}`;
+                sectionDiv.className = 'section error';
+            }
+        }
+
+        async function testStudentPanelView() {
+            const resultDiv = document.getElementById('result5');
+            const sectionDiv = document.getElementById('section5');
+            
+            try {
+                resultDiv.textContent = 'Testing student panel view...';
+                
+                // Test with known student ID
+                const testStudentId = 1001;
+                
+                // Get notifications
+                const notifResponse = await fetch(`/api/notifications/user/${testStudentId}`);
+                const notifications = await notifResponse.json();
+                
+                // Get registrations
+                const regResponse = await fetch(`/api/registrations/user/${testStudentId}/detailed`);
+                const registrations = await regResponse.json();
+                
+                // Get unread count
+                const unreadResponse = await fetch(`/api/notifications/user/${testStudentId}/unread-count`);
+                const unreadData = await unreadResponse.json();
+                
+                resultDiv.textContent = `✅ SUCCESS!\n\nStudent Panel Data (ID: ${testStudentId}):\n\nNotifications:\n- Total: ${notifications.length}\n- Unread: ${unreadData.unreadCount}\n- Recent: ${notifications.slice(0, 3).map(n => `"${n.title}"`).join(', ')}\n\nRegistrations:\n- Total events: ${registrations.length}\n- Events: ${registrations.slice(0, 3).map(r => `"${r.event.title}"`).join(', ')}\n\nThis is what the student should see in their panel!`;
+                sectionDiv.className = 'section success';
+                
+            } catch (error) {
+                resultDiv.textContent = `❌ ERROR: ${error.message}`;
+                sectionDiv.className = 'section error';
+            }
+        }
+
+        // Auto-run first check on page load
+        window.onload = function() {
+            checkUsersAndNotifications();
+        };
+    </script>
+</body>
+</html>

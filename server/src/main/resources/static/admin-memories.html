@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Memory Management</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .navbar h1 {
+            font-size: 24px;
+        }
+
+        .navbar .nav-links {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            transition: all 0.3s;
+        }
+
+        .nav-link:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            font-size: 24px;
+            color: #333;
+            font-weight: 700;
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 10px;
+        }
+
+        .filter-tab {
+            padding: 10px 20px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .filter-tab.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .memories-section {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .memory-item {
+            border: 1px solid #eee;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+        }
+
+        .memory-item:hover {
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .memory-item.pending {
+            border-left: 4px solid #ff9800;
+        }
+
+        .memory-item.approved {
+            border-left: 4px solid #4caf50;
+        }
+
+        .memory-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .memory-user {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .user-info h4 {
+            color: #333;
+            font-size: 16px;
+            margin-bottom: 2px;
+        }
+
+        .user-info p {
+            color: #666;
+            font-size: 12px;
+        }
+
+        .memory-status {
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-approved {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .memory-content {
+            margin-bottom: 15px;
+        }
+
+        .memory-event {
+            background: #f0f4ff;
+            color: #667eea;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
+        .memory-text {
+            color: #333;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .memory-image {
+            max-width: 200px;
+            max-height: 150px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .memory-rating {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+
+        .stars {
+            display: flex;
+            gap: 2px;
+        }
+
+        .star {
+            color: #ffd700;
+            font-size: 14px;
+        }
+
+        .star.empty {
+            color: #ddd;
+        }
+
+        .memory-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-approve {
+            background: #4caf50;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-approve:hover {
+            background: #45a049;
+            transform: translateY(-1px);
+        }
+
+        .btn-reject {
+            background: #f44336;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-reject:hover {
+            background: #da190b;
+            transform: translateY(-1px);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: #666;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .no-memories {
+            text-align: center;
+            padding: 80px 20px;
+            color: #666;
+        }
+
+        .no-memories .icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>🛡️ Admin - Memory Management</h1>
+        <div class="nav-links">
+            <a href="/dashboard.html" class="nav-link">Dashboard</a>
+            <a href="/review-board.html" class="nav-link">Review Board</a>
+            <a href="/login.html" class="nav-link" onclick="logout()">Logout</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="stats-grid" id="statsGrid">
+            <!-- Stats will be loaded here -->
+        </div>
+
+        <div class="memories-section">
+            <div class="section-header">
+                <h2 class="section-title">Memory Management</h2>
+                <div class="filter-tabs">
+                    <div class="filter-tab active" data-filter="pending" onclick="filterMemories('pending')">Pending</div>
+                    <div class="filter-tab" data-filter="approved" onclick="filterMemories('approved')">Approved</div>
+                    <div class="filter-tab" data-filter="all" onclick="filterMemories('all')">All</div>
+                </div>
+            </div>
+
+            <div id="loading" class="loading">
+                <div class="spinner"></div>
+                <p>Loading memories...</p>
+            </div>
+
+            <div id="memoriesContainer" style="display: none;"></div>
+            
+            <div id="noMemories" class="no-memories" style="display: none;">
+                <div class="icon">📝</div>
+                <h3>No Memories Found</h3>
+                <p>No memories match the current filter.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let allMemories = [];
+        let currentFilter = 'pending';
+
+        // Check if user is admin
+        const userRole = localStorage.getItem('userRole') || 'Student';
+        if (userRole !== 'Admin') {
+            alert('Access denied. Admin privileges required.');
+            window.location.href = '/dashboard.html';
+        }
+
+        // Load data on page load
+        loadStats();
+        loadMemories();
+
+        // Load memory statistics
+        async function loadStats() {
+            try {
+                const response = await fetch('/api/memories/stats');
+                const stats = await response.json();
+                displayStats(stats);
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+
+        // Display statistics
+        function displayStats(stats) {
+            const statsGrid = document.getElementById('statsGrid');
+            statsGrid.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-number">${stats.totalMemories || 0}</div>
+                    <div class="stat-label">Total Memories</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${stats.pendingMemories || 0}</div>
+                    <div class="stat-label">Pending Approval</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${stats.approvedMemories || 0}</div>
+                    <div class="stat-label">Approved</div>
+                </div>
+            `;
+        }
+
+        // Load memories based on filter
+        async function loadMemories() {
+            try {
+                let url = '/api/memories';
+                if (currentFilter === 'pending') {
+                    url = '/api/memories/pending';
+                } else if (currentFilter === 'approved') {
+                    url = '/api/memories';
+                }
+
+                const response = await fetch(url);
+                let memories = await response.json();
+
+                if (currentFilter === 'all') {
+                    // Load both pending and approved
+                    const pendingResponse = await fetch('/api/memories/pending');
+                    const pendingMemories = await pendingResponse.json();
+                    memories = [...memories, ...pendingMemories];
+                }
+
+                allMemories = memories;
+                displayMemories(memories);
+            } catch (error) {
+                console.error('Error loading memories:', error);
+                document.getElementById('loading').innerHTML = '<p style="color: red;">Error loading memories. Please try again.</p>';
+            }
+        }
+
+        // Display memories
+        function displayMemories(memories) {
+            const container = document.getElementById('memoriesContainer');
+            const loading = document.getElementById('loading');
+            const noMemories = document.getElementById('noMemories');
+
+            loading.style.display = 'none';
+
+            if (memories.length === 0) {
+                container.style.display = 'none';
+                noMemories.style.display = 'block';
+                return;
+            }
+
+            noMemories.style.display = 'none';
+            container.style.display = 'block';
+
+            container.innerHTML = memories.map(memory => {
+                const createdDate = new Date(memory.createdDate);
+                const formattedDate = createdDate.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+
+                const stars = generateStars(memory.rating);
+                const userInitial = memory.userName ? memory.userName.charAt(0).toUpperCase() : 'U';
+                const isApproved = memory.isApproved;
+
+                return `
+                    <div class="memory-item ${isApproved ? 'approved' : 'pending'}">
+                        <div class="memory-header">
+                            <div class="memory-user">
+                                <div class="user-avatar">${userInitial}</div>
+                                <div class="user-info">
+                                    <h4>${memory.userName || 'Anonymous'}</h4>
+                                    <p>${memory.userEmail || ''} • ${formattedDate}</p>
+                                </div>
+                            </div>
+                            <div class="memory-status ${isApproved ? 'status-approved' : 'status-pending'}">
+                                ${isApproved ? 'Approved' : 'Pending'}
+                            </div>
+                        </div>
+                        
+                        <div class="memory-content">
+                            <div class="memory-event">${memory.eventTitle || 'Event'}</div>
+                            ${memory.imageUrl ? `<br><img src="${memory.imageUrl}" alt="Memory" class="memory-image">` : ''}
+                            <div class="memory-text">${memory.reviewText || ''}</div>
+                            <div class="memory-rating">
+                                <div class="stars">${stars}</div>
+                                <span style="margin-left: 10px; color: #666; font-size: 14px;">${memory.rating}/5</span>
+                                <span style="margin-left: 15px; color: #666; font-size: 12px;">Category: ${memory.category || 'Memory'}</span>
+                                <span style="margin-left: 15px; color: #666; font-size: 12px;">Likes: ${memory.likes || 0}</span>
+                            </div>
+                        </div>
+                        
+                        ${!isApproved ? `
+                            <div class="memory-actions">
+                                <button class="btn-approve" onclick="approveMemory(${memory.id})">
+                                    ✅ Approve
+                                </button>
+                                <button class="btn-reject" onclick="rejectMemory(${memory.id})">
+                                    ❌ Reject
+                                </button>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Generate star rating display
+        function generateStars(rating) {
+            let stars = '';
+            for (let i = 1; i <= 5; i++) {
+                stars += `<span class="star ${i <= rating ? '' : 'empty'}">⭐</span>`;
+            }
+            return stars;
+        }
+
+        // Filter memories
+        function filterMemories(filter) {
+            currentFilter = filter;
+            
+            // Update active tab
+            document.querySelectorAll('.filter-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelector(`[data-filter="${filter}"]`).classList.add('active');
+            
+            // Reload memories
+            loadMemories();
+        }
+
+        // Approve memory
+        async function approveMemory(memoryId) {
+            if (!confirm('Are you sure you want to approve this memory?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/memories/approve/${memoryId}`, {
+                    method: 'POST'
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert('Memory approved successfully!');
+                    loadMemories();
+                    loadStats();
+                } else {
+                    alert('Failed to approve memory: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error approving memory:', error);
+                alert('Failed to approve memory. Please try again.');
+            }
+        }
+
+        // Reject memory (delete)
+        async function rejectMemory(memoryId) {
+            if (!confirm('Are you sure you want to reject and delete this memory? This action cannot be undone.')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/memories/${memoryId}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    alert('Memory rejected and deleted successfully!');
+                    loadMemories();
+                    loadStats();
+                } else {
+                    alert('Failed to reject memory. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error rejecting memory:', error);
+                alert('Failed to reject memory. Please try again.');
+            }
+        }
+
+        // Logout function
+        function logout() {
+            localStorage.clear();
+            window.location.href = '/login.html';
+        }
+    </script>
+</body>
+</html>

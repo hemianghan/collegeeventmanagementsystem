@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Dashboard Titles</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-case { padding: 15px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; }
+        .success { background: #d4edda; }
+        .info { background: #d1ecf1; }
+    </style>
+</head>
+<body>
+    <h1>🔧 Dashboard Title Test</h1>
+    
+    <div class="test-case info">
+        <h3>📋 What Should Happen:</h3>
+        <p><strong>👨‍🎓 Student Login:</strong> Title should show "Student Panel - My Events"</p>
+        <p><strong>👨‍💼 Admin Login:</strong> Title should show "Admin Panel - Event Management"</p>
+    </div>
+    
+    <div class="test-case success">
+        <h3>🧪 Test Instructions:</h3>
+        <ol>
+            <li><strong>Test Student Panel:</strong>
+                <ul>
+                    <li>Go to: <a href="http://localhost:8080/login.html" target="_blank">Login Page</a></li>
+                    <li>Login with: <code>student@college.edu</code> / <code>password</code></li>
+                    <li>Check title shows: <strong>"👨‍🎓 Student Panel - My Events"</strong></li>
+                </ul>
+            </li>
+            <br>
+            <li><strong>Test Admin Panel:</strong>
+                <ul>
+                    <li>Logout and login with: <code>admin@college.edu</code> / <code>password</code></li>
+                    <li>Check title shows: <strong>"👨‍💼 Admin Panel - Event Management"</strong></li>
+                </ul>
+            </li>
+        </ol>
+    </div>
+    
+    <div class="test-case info">
+        <h3>🔗 Quick Links:</h3>
+        <p><a href="http://localhost:8080/login.html" target="_blank">🔐 Login Page</a></p>
+        <p><a href="http://localhost:8080/dashboard.html" target="_blank">📊 Dashboard (Direct)</a></p>
+    </div>
+</body>
+</html>

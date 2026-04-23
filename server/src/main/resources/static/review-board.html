@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Review Board - Student Memories</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .navbar h1 {
+            font-size: 24px;
+        }
+
+        .navbar .nav-links {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            transition: all 0.3s;
+        }
+
+        .nav-link:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .page-header h2 {
+            color: #333;
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .page-header p {
+            color: #666;
+            font-size: 16px;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 10px;
+        }
+
+        .filter-tab {
+            padding: 10px 20px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .filter-tab.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-share {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-share:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .memories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+        }
+
+        .memory-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+        }
+
+        .memory-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+
+        .memory-header {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .memory-user {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .user-info h4 {
+            color: #333;
+            font-size: 16px;
+            margin-bottom: 2px;
+        }
+
+        .user-info p {
+            color: #666;
+            font-size: 12px;
+        }
+
+        .memory-event {
+            background: #f0f4ff;
+            color: #667eea;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .memory-content {
+            padding: 20px;
+        }
+
+        .memory-image {
+            width: 100%;
+            max-height: 200px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .memory-text {
+            color: #333;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .memory-rating {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 15px;
+        }
+
+        .stars {
+            display: flex;
+            gap: 2px;
+        }
+
+        .star {
+            color: #ffd700;
+            font-size: 16px;
+        }
+
+        .star.empty {
+            color: #ddd;
+        }
+
+        .memory-footer {
+            padding: 15px 20px;
+            background: #f8f9fa;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .memory-category {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .category-memory {
+            background: #e8f5e8;
+            color: #2d7d32;
+        }
+
+        .category-review {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .category-feedback {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .memory-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .like-btn {
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .like-btn:hover {
+            color: #e91e63;
+        }
+
+        .like-btn.liked {
+            color: #e91e63;
+        }
+
+        /* Share Memory Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .close {
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .close:hover {
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: all 0.3s;
+            background: #f8f9fa;
+        }
+
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .rating-input {
+            display: flex;
+            gap: 5px;
+            margin-top: 8px;
+        }
+
+        .rating-star {
+            font-size: 24px;
+            color: #ddd;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .rating-star:hover,
+        .rating-star.selected {
+            color: #ffd700;
+        }
+
+        .file-upload {
+            border: 2px dashed #667eea;
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: #f8f9fa;
+        }
+
+        .file-upload:hover {
+            background: #f0f4ff;
+        }
+
+        .file-upload.dragover {
+            border-color: #764ba2;
+            background: #f0f4ff;
+        }
+
+        .upload-icon {
+            font-size: 48px;
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .upload-text {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .image-preview {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 10px;
+            margin-top: 15px;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 20px;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: #666;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .no-memories {
+            text-align: center;
+            padding: 80px 20px;
+            color: #666;
+        }
+
+        .no-memories .icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        @media (max-width: 768px) {
+            .memories-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .filter-tabs {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>🎓 Review Board</h1>
+        <div class="nav-links">
+            <a href="/dashboard.html" class="nav-link">Dashboard</a>
+            <a href="/login.html" class="nav-link" onclick="logout()">Logout</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="page-header">
+            <h2>Student Memories & Reviews</h2>
+            <p>Share your experiences and memories from college events</p>
+        </div>
+
+        <div class="controls">
+            <div class="filter-tabs">
+                <div class="filter-tab active" data-filter="all" onclick="filterMemories('all')">All</div>
+                <div class="filter-tab" data-filter="Memory" onclick="filterMemories('Memory')">Memories</div>
+                <div class="filter-tab" data-filter="Review" onclick="filterMemories('Review')">Reviews</div>
+                <div class="filter-tab" data-filter="Feedback" onclick="filterMemories('Feedback')">Feedback</div>
+            </div>
+            
+            <button class="btn-share" onclick="openShareModal()" id="shareBtn" style="display: none;">
+                <span>📝</span> Share Memory
+            </button>
+        </div>
+
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <p>Loading memories...</p>
+        </div>
+
+        <div id="memoriesContainer" class="memories-grid" style="display: none;"></div>
+        
+        <div id="noMemories" class="no-memories" style="display: none;">
+            <div class="icon">📝</div>
+            <h3>No Memories Yet</h3>
+            <p>Be the first to share your college event experience!</p>
+        </div>
+    </div>
+
+    <!-- Share Memory Modal -->
+    <div id="shareModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Share Your Memory</h2>
+                <span class="close" onclick="closeShareModal()">&times;</span>
+            </div>
+            
+            <form id="shareForm">
+                <div class="form-group">
+                    <label for="eventSelect">Select Event</label>
+                    <select id="eventSelect" required>
+                        <option value="">Choose an event...</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="categorySelect">Category</label>
+                    <select id="categorySelect" required>
+                        <option value="Memory">Memory</option>
+                        <option value="Review">Review</option>
+                        <option value="Feedback">Feedback</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="reviewText">Share Your Experience</label>
+                    <textarea id="reviewText" placeholder="Tell us about your experience at this event..." required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Rate Your Experience</label>
+                    <div class="rating-input" id="ratingInput">
+                        <span class="rating-star" data-rating="1">⭐</span>
+                        <span class="rating-star" data-rating="2">⭐</span>
+                        <span class="rating-star" data-rating="3">⭐</span>
+                        <span class="rating-star" data-rating="4">⭐</span>
+                        <span class="rating-star" data-rating="5">⭐</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Upload Photo (Optional)</label>
+                    <div class="file-upload" id="fileUpload">
+                        <div class="upload-icon">📷</div>
+                        <div class="upload-text">
+                            <strong>Click to upload</strong> or drag and drop<br>
+                            <small>PNG, JPG up to 5MB</small>
+                        </div>
+                        <input type="file" id="fileInput" accept="image/*" style="display: none;">
+                        <img id="imagePreview" class="image-preview" style="display: none;">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-submit" id="submitBtn">Share Memory</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let allMemories = [];
+        let currentFilter = 'all';
+        let selectedRating = 0;
+        let uploadedImageData = null;
+        let allEvents = [];
+
+        // Check if user is logged in
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        const userRole = localStorage.getItem('userRole') || 'Student';
+        const userName = localStorage.getItem('userName') || 'User';
+        const userEmail = localStorage.getItem('userEmail') || '';
+
+        if (!user.id) {
+            window.location.href = '/login.html';
+        }
+
+        // Show share button for students
+        if (userRole === 'Student') {
+            document.getElementById('shareBtn').style.display = 'flex';
+        }
+
+        // Load memories and events on page load
+        loadMemories();
+        loadEvents();
+
+        // Load all approved memories
+        async function loadMemories() {
+            try {
+                const response = await fetch('/api/memories');
+                allMemories = await response.json();
+                displayMemories(allMemories);
+            } catch (error) {
+                console.error('Error loading memories:', error);
+                document.getElementById('loading').innerHTML = '<p style="color: red;">Error loading memories. Please try again.</p>';
+            }
+        }
+
+        // Load events for dropdown
+        async function loadEvents() {
+            try {
+                const response = await fetch('/api/events');
+                allEvents = await response.json();
+                populateEventDropdown();
+            } catch (error) {
+                console.error('Error loading events:', error);
+            }
+        }
+
+        // Populate event dropdown
+        function populateEventDropdown() {
+            const eventSelect = document.getElementById('eventSelect');
+            eventSelect.innerHTML = '<option value="">Choose an event...</option>';
+            
+            allEvents.forEach(event => {
+                const option = document.createElement('option');
+                option.value = event.id;
+                option.textContent = event.title;
+                eventSelect.appendChild(option);
+            });
+        }
+
+        // Display memories
+        function displayMemories(memories) {
+            const container = document.getElementById('memoriesContainer');
+            const loading = document.getElementById('loading');
+            const noMemories = document.getElementById('noMemories');
+
+            loading.style.display = 'none';
+
+            if (memories.length === 0) {
+                container.style.display = 'none';
+                noMemories.style.display = 'block';
+                return;
+            }
+
+            noMemories.style.display = 'none';
+            container.style.display = 'grid';
+
+            container.innerHTML = memories.map(memory => {
+                const createdDate = new Date(memory.createdDate);
+                const formattedDate = createdDate.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                });
+
+                const stars = generateStars(memory.rating);
+                const userInitial = memory.userName ? memory.userName.charAt(0).toUpperCase() : 'U';
+
+                return `
+                    <div class="memory-card">
+                        <div class="memory-header">
+                            <div class="memory-user">
+                                <div class="user-avatar">${userInitial}</div>
+                                <div class="user-info">
+                                    <h4>${memory.userName || 'Anonymous'}</h4>
+                                    <p>${formattedDate}</p>
+                                </div>
+                            </div>
+                            <div class="memory-event">${memory.eventTitle || 'Event'}</div>
+                        </div>
+                        
+                        <div class="memory-content">
+                            ${memory.imageUrl ? `<img src="${memory.imageUrl}" alt="Memory" class="memory-image">` : ''}
+                            <div class="memory-text">${memory.reviewText || ''}</div>
+                            <div class="memory-rating">
+                                <div class="stars">${stars}</div>
+                                <span style="margin-left: 10px; color: #666; font-size: 14px;">${memory.rating}/5</span>
+                            </div>
+                        </div>
+                        
+                        <div class="memory-footer">
+                            <div class="memory-category category-${memory.category?.toLowerCase() || 'memory'}">
+                                ${memory.category || 'Memory'}
+                            </div>
+                            <div class="memory-actions">
+                                <button class="like-btn" onclick="likeMemory(${memory.id})">
+                                    <span>❤️</span> ${memory.likes || 0}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Generate star rating display
+        function generateStars(rating) {
+            let stars = '';
+            for (let i = 1; i <= 5; i++) {
+                stars += `<span class="star ${i <= rating ? '' : 'empty'}">⭐</span>`;
+            }
+            return stars;
+        }
+
+        // Filter memories
+        function filterMemories(filter) {
+            currentFilter = filter;
+            
+            // Update active tab
+            document.querySelectorAll('.filter-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelector(`[data-filter="${filter}"]`).classList.add('active');
+            
+            // Filter memories
+            let filteredMemories = allMemories;
+            if (filter !== 'all') {
+                filteredMemories = allMemories.filter(memory => memory.category === filter);
+            }
+            
+            displayMemories(filteredMemories);
+        }
+
+        // Open share modal
+        function openShareModal() {
+            selectedRating = 0;
+            uploadedImageData = null;
+            document.getElementById('shareForm').reset();
+            document.getElementById('imagePreview').style.display = 'none';
+            updateRatingDisplay();
+            document.getElementById('shareModal').style.display = 'block';
+        }
+
+        // Close share modal
+        function closeShareModal() {
+            document.getElementById('shareModal').style.display = 'none';
+        }
+
+        // Rating system
+        document.getElementById('ratingInput').addEventListener('click', function(e) {
+            if (e.target.classList.contains('rating-star')) {
+                selectedRating = parseInt(e.target.dataset.rating);
+                updateRatingDisplay();
+            }
+        });
+
+        function updateRatingDisplay() {
+            document.querySelectorAll('.rating-star').forEach((star, index) => {
+                if (index < selectedRating) {
+                    star.classList.add('selected');
+                } else {
+                    star.classList.remove('selected');
+                }
+            });
+        }
+
+        // File upload handling
+        const fileUpload = document.getElementById('fileUpload');
+        const fileInput = document.getElementById('fileInput');
+        const imagePreview = document.getElementById('imagePreview');
+
+        fileUpload.addEventListener('click', () => fileInput.click());
+
+        fileUpload.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            fileUpload.classList.add('dragover');
+        });
+
+        fileUpload.addEventListener('dragleave', () => {
+            fileUpload.classList.remove('dragover');
+        });
+
+        fileUpload.addEventListener('drop', (e) => {
+            e.preventDefault();
+            fileUpload.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFileUpload(files[0]);
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFileUpload(e.target.files[0]);
+            }
+        });
+
+        function handleFileUpload(file) {
+            if (file.size > 5 * 1024 * 1024) {
+                alert('File size must be less than 5MB');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                uploadedImageData = e.target.result;
+                imagePreview.src = uploadedImageData;
+                imagePreview.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Submit memory form
+        document.getElementById('shareForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            if (selectedRating === 0) {
+                alert('Please select a rating');
+                return;
+            }
+
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Sharing...';
+
+            try {
+                const formData = {
+                    userId: user.id,
+                    userName: userName,
+                    userEmail: userEmail,
+                    eventId: document.getElementById('eventSelect').value,
+                    category: document.getElementById('categorySelect').value,
+                    reviewText: document.getElementById('reviewText').value,
+                    rating: selectedRating,
+                    imageData: uploadedImageData
+                };
+
+                const response = await fetch('/api/memories/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert('Memory shared successfully! It will be visible after admin approval.');
+                    closeShareModal();
+                    loadMemories(); // Reload memories
+                } else {
+                    alert('Failed to share memory: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error sharing memory:', error);
+                alert('Failed to share memory. Please try again.');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Share Memory';
+            }
+        });
+
+        // Like memory
+        async function likeMemory(memoryId) {
+            try {
+                const response = await fetch(`/api/memories/like/${memoryId}`, {
+                    method: 'POST'
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Update the like count in the UI
+                    loadMemories(); // Reload to get updated like counts
+                } else {
+                    console.error('Failed to like memory:', result.message);
+                }
+            } catch (error) {
+                console.error('Error liking memory:', error);
+            }
+        }
+
+        // Logout function
+        function logout() {
+            localStorage.clear();
+            window.location.href = '/login.html';
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('shareModal');
+            if (event.target === modal) {
+                closeShareModal();
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>College Event Management - Login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 420px;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo h1 {
+            color: #667eea;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .logo p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: all 0.3s;
+            background: #f8f9fa;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+        }
+
+        .role-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .role-option {
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: #f8f9fa;
+        }
+
+        .role-option:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+
+        .role-option.active {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .role-option .icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .role-option .label {
+            font-weight: 600;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-login:active {
+            transform: translateY(0);
+        }
+
+        .btn-login:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .alert {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .otp-section {
+            display: none;
+        }
+
+        .otp-input-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .otp-input {
+            width: 50px;
+            height: 50px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: 600;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            background: #f8f9fa;
+        }
+
+        .otp-input:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+        }
+
+        .resend-otp {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .resend-otp button {
+            background: none;
+            border: none;
+            color: #667eea;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .resend-otp button:disabled {
+            color: #999;
+            cursor: not-allowed;
+            text-decoration: none;
+        }
+
+        .back-btn {
+            width: 100%;
+            padding: 12px;
+            background: #f0f0f0;
+            color: #333;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .back-btn:hover {
+            background: #e0e0e0;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo">
+            <h1>🎓 College Events</h1>
+            <p>Event Management System</p>
+        </div>
+
+        <div id="alert" class="alert"></div>
+
+        <!-- Step 1: Email & Password Form -->
+        <form id="loginForm" class="login-section">
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input 
+                    type="email" 
+                    id="email" 
+                    name="email" 
+                    placeholder="your.email@college.edu" 
+                    required
+                    autocomplete="email"
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input 
+                    type="password" 
+                    id="password" 
+                    name="password" 
+                    placeholder="Enter your password" 
+                    required
+                    autocomplete="current-password"
+                >
+            </div>
+
+            <div class="form-group">
+                <label>Login As</label>
+                <div class="role-selector">
+                    <div class="role-option active" data-role="Student" onclick="selectRole('Student')">
+                        <div class="icon">👨‍🎓</div>
+                        <div class="label">Student</div>
+                    </div>
+                    <div class="role-option" data-role="Admin" onclick="selectRole('Admin')">
+                        <div class="icon">👨‍💼</div>
+                        <div class="label">Admin</div>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-login" id="sendOtpBtn">Send OTP</button>
+
+            <div class="loading" id="sendingOtp">
+                <div class="spinner"></div>
+                <p style="margin-top: 10px; color: #666;">Sending OTP to your email...</p>
+            </div>
+        </form>
+
+        <!-- Step 2: OTP Verification Form -->
+        <div id="otpForm" class="otp-section">
+            <div style="text-align: center; margin-bottom: 20px;">
+                <div style="font-size: 48px; margin-bottom: 10px;">📧</div>
+                <h3 style="color: #333; margin-bottom: 5px;">Enter OTP</h3>
+                <p style="color: #666; font-size: 14px;">We've sent a 4-digit code to<br><strong id="emailDisplay"></strong></p>
+            </div>
+
+            <div class="otp-input-group">
+                <input type="text" class="otp-input" maxlength="1" id="otp1" oninput="moveToNext(this, 'otp2')" onkeydown="moveToPrev(event, this, null)">
+                <input type="text" class="otp-input" maxlength="1" id="otp2" oninput="moveToNext(this, 'otp3')" onkeydown="moveToPrev(event, this, 'otp1')">
+                <input type="text" class="otp-input" maxlength="1" id="otp3" oninput="moveToNext(this, 'otp4')" onkeydown="moveToPrev(event, this, 'otp2')">
+                <input type="text" class="otp-input" maxlength="1" id="otp4" oninput="verifyOtpAuto()" onkeydown="moveToPrev(event, this, 'otp3')">
+            </div>
+
+            <button type="button" class="btn-login" id="verifyOtpBtn" onclick="verifyOtp()">Verify OTP</button>
+            
+            <div class="resend-otp">
+                Didn't receive the code? 
+                <button type="button" id="resendBtn" onclick="resendOtp()">Resend OTP</button>
+                <span id="resendTimer" style="display: none;"> (wait <span id="countdown">30</span>s)</span>
+            </div>
+
+            <button type="button" class="back-btn" onclick="backToLogin()">← Back to Login</button>
+
+            <div class="loading" id="verifyingOtp">
+                <div class="spinner"></div>
+                <p style="margin-top: 10px; color: #666;">Verifying OTP...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedRole = 'Student';
+        let userEmail = '';
+        let userPassword = '';
+        let resendCountdown = 30;
+        let resendTimer = null;
+
+        // Select role function
+        function selectRole(role) {
+            selectedRole = role;
+            document.querySelectorAll('.role-option').forEach(option => {
+                option.classList.remove('active');
+            });
+            document.querySelector(`[data-role="${role}"]`).classList.add('active');
+        }
+
+        // Show alert message
+        function showAlert(message, type) {
+            const alert = document.getElementById('alert');
+            alert.textContent = message;
+            alert.className = `alert alert-${type}`;
+            alert.style.display = 'block';
+            
+            if (type === 'success') {
+                setTimeout(() => {
+                    alert.style.display = 'none';
+                }, 3000);
+            }
+        }
+
+        // Handle Step 1: Send OTP
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            await sendOtp();
+        });
+
+        async function sendOtp() {
+            userEmail = document.getElementById('email').value;
+            userPassword = document.getElementById('password').value;
+            const loading = document.getElementById('sendingOtp');
+            const submitBtn = document.getElementById('sendOtpBtn');
+
+            // Show loading
+            submitBtn.disabled = true;
+            submitBtn.style.display = 'none';
+            loading.style.display = 'block';
+
+            try {
+                const response = await fetch('/api/users/send-otp', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: userEmail,
+                        password: userPassword,
+                        role: selectedRole
+                    })
+                });
+
+                const result = await response.text();
+
+                if (result.startsWith('Success')) {
+                    showAlert('OTP sent successfully! Check your email.', 'success');
+                    
+                    // Switch to OTP form
+                    document.getElementById('loginForm').style.display = 'none';
+                    document.getElementById('otpForm').style.display = 'block';
+                    document.getElementById('emailDisplay').textContent = userEmail;
+                    
+                    // Focus on first OTP input
+                    setTimeout(() => {
+                        document.getElementById('otp1').focus();
+                    }, 100);
+                    
+                    // Start resend countdown
+                    startResendCountdown();
+                } else {
+                    showAlert(result.replace('Error: ', ''), 'error');
+                    submitBtn.disabled = false;
+                    submitBtn.style.display = 'block';
+                    loading.style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Send OTP error:', error);
+                showAlert('Connection error. Please check if server is running.', 'error');
+                submitBtn.disabled = false;
+                submitBtn.style.display = 'block';
+                loading.style.display = 'none';
+            }
+        }
+
+        // Handle Step 2: Verify OTP
+        async function verifyOtp() {
+            const otp = document.getElementById('otp1').value + 
+                        document.getElementById('otp2').value + 
+                        document.getElementById('otp3').value + 
+                        document.getElementById('otp4').value;
+
+            if (otp.length !== 4) {
+                showAlert('Please enter the complete 4-digit OTP', 'error');
+                return;
+            }
+
+            const loading = document.getElementById('verifyingOtp');
+            const submitBtn = document.getElementById('verifyOtpBtn');
+
+            // Show loading
+            submitBtn.disabled = true;
+            submitBtn.style.display = 'none';
+            loading.style.display = 'block';
+
+            try {
+                const response = await fetch('/api/users/verify-otp', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: userEmail,
+                        otp: otp
+                    })
+                });
+
+                if (response.ok) {
+                    const user = await response.json();
+                    
+                    // Store user data in localStorage
+                    localStorage.setItem('user', JSON.stringify(user));
+                    localStorage.setItem('userRole', user.role || selectedRole);
+                    localStorage.setItem('userEmail', userEmail);
+                    localStorage.setItem('userName', user.name || 'User');
+                    localStorage.setItem('userId', user.id);
+                    
+                    showAlert('Login successful! Redirecting...', 'success');
+                    
+                    // Redirect to dashboard
+                    setTimeout(() => {
+                        window.location.href = '/dashboard.html';
+                    }, 1000);
+                } else {
+                    showAlert('Invalid OTP. Please try again.', 'error');
+                    // Clear OTP inputs
+                    document.getElementById('otp1').value = '';
+                    document.getElementById('otp2').value = '';
+                    document.getElementById('otp3').value = '';
+                    document.getElementById('otp4').value = '';
+                    document.getElementById('otp1').focus();
+                    
+                    submitBtn.disabled = false;
+                    submitBtn.style.display = 'block';
+                    loading.style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Verify OTP error:', error);
+                showAlert('Connection error. Please try again.', 'error');
+                submitBtn.disabled = false;
+                submitBtn.style.display = 'block';
+                loading.style.display = 'none';
+            }
+        }
+
+        // Auto-verify when 4 digits are entered
+        function verifyOtpAuto() {
+            const otp = document.getElementById('otp1').value + 
+                        document.getElementById('otp2').value + 
+                        document.getElementById('otp3').value + 
+                        document.getElementById('otp4').value;
+            
+            if (otp.length === 4) {
+                setTimeout(() => verifyOtp(), 300);
+            }
+        }
+
+        // OTP input navigation
+        function moveToNext(current, nextId) {
+            if (current.value.length === 1 && nextId) {
+                document.getElementById(nextId).focus();
+            }
+        }
+
+        function moveToPrev(event, current, prevId) {
+            if (event.key === 'Backspace' && current.value === '' && prevId) {
+                document.getElementById(prevId).focus();
+            }
+        }
+
+        // Resend OTP
+        async function resendOtp() {
+            document.getElementById('resendBtn').disabled = true;
+            await sendOtp();
+        }
+
+        // Resend countdown timer
+        function startResendCountdown() {
+            resendCountdown = 30;
+            document.getElementById('resendBtn').disabled = true;
+            document.getElementById('resendTimer').style.display = 'inline';
+            
+            resendTimer = setInterval(() => {
+                resendCountdown--;
+                document.getElementById('countdown').textContent = resendCountdown;
+                
+                if (resendCountdown <= 0) {
+                    clearInterval(resendTimer);
+                    document.getElementById('resendBtn').disabled = false;
+                    document.getElementById('resendTimer').style.display = 'none';
+                }
+            }, 1000);
+        }
+
+        // Back to login
+        function backToLogin() {
+            document.getElementById('otpForm').style.display = 'none';
+            document.getElementById('loginForm').style.display = 'block';
+            document.getElementById('sendOtpBtn').disabled = false;
+            document.getElementById('sendOtpBtn').style.display = 'block';
+            document.getElementById('sendingOtp').style.display = 'none';
+            
+            // Clear OTP inputs
+            document.getElementById('otp1').value = '';
+            document.getElementById('otp2').value = '';
+            document.getElementById('otp3').value = '';
+            document.getElementById('otp4').value = '';
+            
+            // Clear countdown
+            if (resendTimer) {
+                clearInterval(resendTimer);
+            }
+            
+            showAlert('', 'info');
+        }
+
+        // Check if user is already logged in
+        window.onload = function() {
+            const user = localStorage.getItem('user');
+            if (user) {
+                window.location.href = '/dashboard.html';
+            }
+        };
+    </script>
+</body>
+</html>

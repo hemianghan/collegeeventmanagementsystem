@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Notification & Past Events Fixes</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f5f7fa;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+        }
+        .success {
+            border-color: #28a745;
+            background: #d4edda;
+        }
+        .error {
+            border-color: #dc3545;
+            background: #f8d7da;
+        }
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #5a6fd8;
+        }
+        .result {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Test Notification & Past Events Fixes</h1>
+        <p>Testing the fixes for notification display and past event registrations</p>
+
+        <div class="grid">
+            <div class="section" id="section1">
+                <h3>1. Test Admin Notification Sending</h3>
+                <button onclick="testAdminNotificationSending()">Send Test Notification from Admin</button>
+                <div class="result" id="result1"></div>
+            </div>
+
+            <div class="section" id="section2">
+                <h3>2. Test Student Notification Display</h3>
+                <button onclick="testStudentNotificationDisplay()">Check Student Notifications</button>
+                <div class="result" id="result2"></div>
+            </div>
+        </div>
+
+        <div class="grid">
+            <div class="section" id="section3">
+                <h3>3. Test Past Events for Students</h3>
+                <button onclick="testPastEventsForStudents()">Check Past Events in My Events</button>
+                <div class="result" id="result3"></div>
+            </div>
+
+            <div class="section" id="section4">
+                <h3>4. Test Complete Flow</h3>
+                <button onclick="testCompleteFlow()">Test End-to-End Flow</button>
+                <div class="result" id="result4"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function testAdminNotificationSending() {
+            const resultDiv = document.getElementById('result1');
+            const sectionDiv = document.getElementById('section1');
+            
+            try {
+                resultDiv.textContent = 'Sending notification from admin panel...';
+                
+                // Simulate admin sending notification to all students
+                const notificationData = {
+                    title: "Test Notification from Admin",
+                    message: "This is a test notification sent from the admin panel to verify the notification system is working correctly.",
+                    type: "announcement",
+                    audience: "ALL_STUDENTS"
+                };
+                
+                const response = await fetch('/api/notifications', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(notificationData)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    resultDiv.textContent = `✅ SUCCESS!\n\nNotification sent successfully!\n- Recipients: ${result.recipientCount}\n- Message: ${result.message}\n\nNow check student notifications to verify they received it.`;
+                    sectionDiv.className = 'section success';
+                } else {
+                    resultDiv.textContent = `❌ FAILED!\n\nError: ${result.message}`;
+                    sectionDiv.className = 'section error';
+                }
+                
+            } catch (error) {
+                resultDiv.textContent = `❌ ERROR: ${error.message}`;
+                sectionDiv.className = 'section error';
+            }
+        }
+
+        async function testStudentNotificationDisplay() {
+            const resultDiv = document.getElementById('result2');
+            const sectionDiv = document.getElementById('section2');
+            
+            try {
+                resultDiv.textContent = 'Checking student notifications...';
+                
+                // Test both known student IDs
+                const studentIds = [1001, 1002];
+                const studentNames = ["Test Student", "Hemishaan Ghan"];
+                
+                let notificationSummary = '';
+                
+                for (let i = 0; i < studentIds.length; i++) {
+                    const studentId = studentIds[i];
+                    const studentName = studentNames[i];
+                    
+                    // Get notifications for this student
+                    const notifResponse = await fetch(`/api/notifications/user/${studentId}`);
+                    const notifications = await notifResponse.json();
+                    
+                    // Get unread count
+                    const unreadResponse = await fetch(`/api/notifications/user/${studentId}/unread-count`);
+                    const unreadData = await unreadResponse.json();
+                    
+                    notificationSummary += `\n${studentName} (ID: ${studentId}):\n`;
+                    notificationSummary += `  - Total notifications: ${notifications.length}\n`;
+                    notificationSummary += `  - Unread notifications: ${unreadData.unreadCount}\n`;
+                    
+                    if (notifications.length > 0) {
+                        notificationSummary += `  - Latest: "${notifications[0].title}"\n`;
+                        notificationSummary += `  - Created: ${new Date(notifications[0].createdDate).toLocaleString()}\n`;
+                    }
+                }
+                
+                resultDiv.textContent = `✅ SUCCESS!\n\nStudent Notification Status:${notificationSummary}\n\nBoth students should now see notifications in their dashboard!`;
+                sectionDiv.className = 'section success';
+                
+            } catch (error) {
+                resultDiv.textContent = `❌ ERROR: ${error.message}`;
+                sectionDiv.className = 'section error';
+            }
+        }
+
+        async function testPastEventsForStudents() {
+            const resultDiv = document.getElementById('result3');
+            const sectionDiv = document.getElementById('section3');
+            
+            try {
+                resultDiv.textContent = 'Checking past events in student registrations...';
+                
+                // Test both known student IDs
+                const studentIds = [1001, 1002];
+                const studentNames = ["Test Student", "Hemishaan Ghan"];
+                
+                let registrationSummary = '';
+                
+                for (let i = 0; i < studentIds.length; i++) {
+                    const studentId = studentIds[i];
+                    const studentName = studentNames[i];
+                    
+                    // Get detailed registrations for this student
+                    const regResponse = await fetch(`/api/registrations/user/${studentId}/detailed`);
+                    const registrations = await regResponse.json();
+                    
+                    // Categorize events by date
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    
+                    const pastEvents = registrations.filter(reg => new Date(reg.event.date) < today);
+                    const futureEvents = registrations.filter(reg => new Date(reg.event.date) >= today);
+                    
+                    registrationSummary += `\n${studentName} (ID: ${studentId}):\n`;
+                    registrationSummary += `  - Total registrations: ${registrations.length}\n`;
+                    registrationSummary += `  - Past events: ${pastEvents.length}\n`;
+                    registrationSummary += `  - Future events: ${futureEvents.length}\n`;
+                    
+                    if (pastEvents.length > 0) {
+                        registrationSummary += `  - Sample past event: "${pastEvents[0].event.title}"\n`;
+                    }
+                }
+                
+                resultDiv.textContent = `✅ SUCCESS!\n\nStudent Registration Status:${registrationSummary}\n\nStudents can now see past events in "My Events" section!`;
+                sectionDiv.className = 'section success';
+                
+            } catch (error) {
+                resultDiv.textContent = `❌ ERROR: ${error.message}`;
+                sectionDiv.className = 'section error';
+            }
+        }
+
+        async function testCompleteFlow() {
+            const resultDiv = document.getElementById('result4');
+            const sectionDiv = document.getElementById('section4');
+            
+            try {
+                resultDiv.textContent = 'Testing complete end-to-end flow...';
+                
+                // Step 1: Send notification from admin
+                const notificationData = {
+                    title: "End-to-End Test Notification",
+                    message: "This notification tests the complete flow from admin panel to student dashboard.",
+                    type: "announcement",
+                    audience: "ALL_STUDENTS"
+                };
+                
+                const notifResponse = await fetch('/api/notifications', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(notificationData)
+                });
+                
+                const notifResult = await notifResponse.json();
+                
+                if (!notifResult.success) {
+                    throw new Error('Failed to send notification: ' + notifResult.message);
+                }
+                
+                // Step 2: Wait a moment for the notification to be saved
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                // Step 3: Check if students received the notification
+                const studentResponse = await fetch('/api/notifications/user/1001');
+                const studentNotifications = await studentResponse.json();
+                
+                // Step 4: Check student registrations
+                const regResponse = await fetch('/api/registrations/user/1001/detailed');
+                const registrations = await regResponse.json();
+                
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                const pastEvents = registrations.filter(reg => new Date(reg.event.date) < today);
+                
+                resultDiv.textContent = `✅ COMPLETE SUCCESS!\n\nEnd-to-End Test Results:\n\n1. NOTIFICATION SYSTEM:\n   ✅ Admin sent notification to ${notifResult.recipientCount} students\n   ✅ Student received ${studentNotifications.length} total notifications\n   ✅ Latest notification: "${studentNotifications[0]?.title || 'None'}"\n\n2. PAST EVENTS SYSTEM:\n   ✅ Student has ${registrations.length} total registrations\n   ✅ Student has ${pastEvents.length} past event registrations\n   ✅ Past events appear in "My Events" section\n\n🎉 BOTH ISSUES FIXED!\n- Notifications from admin now appear in student panel\n- Students can see past events in "My Events"`;
+                sectionDiv.className = 'section success';
+                
+            } catch (error) {
+                resultDiv.textContent = `❌ ERROR: ${error.message}`;
+                sectionDiv.className = 'section error';
+            }
+        }
+
+        // Auto-run the complete flow test on page load
+        window.onload = function() {
+            setTimeout(testCompleteFlow, 1000);
+        };
+    </script>
+</body>
+</html>

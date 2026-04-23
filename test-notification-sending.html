@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Notification Sending</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f5f7fa;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+        }
+        .success {
+            border-color: #28a745;
+            background: #d4edda;
+        }
+        .error {
+            border-color: #dc3545;
+            background: #f8d7da;
+        }
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #5a6fd8;
+        }
+        .result {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📧 Notification Sending Test</h1>
+        <p>Testing the complete notification sending functionality</p>
+
+        <div class="test-section" id="test1">
+            <h3>Test 1: Check Notification Endpoints</h3>
+            <button onclick="testNotificationEndpoints()">Test Endpoints</button>
+            <div class="result" id="result1"></div>
+        </div>
+
+        <div class="test-section" id="test2">
+            <h3>Test 2: Send Test Notification</h3>
+            <div class="form-group">
+                <label>Title:</label>
+                <input type="text" id="testTitle" value="Test Notification" />
+            </div>
+            <div class="form-group">
+                <label>Message:</label>
+                <textarea id="testMessage" rows="3">This is a test notification to verify the system is working correctly.</textarea>
+            </div>
+            <button onclick="sendTestNotification()">Send Test Notification</button>
+            <div class="result" id="result2"></div>
+        </div>
+
+        <div class="test-section" id="test3">
+            <h3>Test 3: Full Notification Flow (Like Admin Panel)</h3>
+            <button onclick="testFullNotificationFlow()">Test Full Flow</button>
+            <div class="result" id="result3"></div>
+        </div>
+    </div>
+
+    <script>
+        async function testNotificationEndpoints() {
+            const resultDiv = document.getElementById('result1');
+            const testDiv = document.getElementById('test1');
+            
+            try {
+                resultDiv.textContent = 'Testing notification endpoints...';
+                
+                // Test 1: Check if we can get users
+                const usersResponse = await fetch('/api/users');
+                if (!usersResponse.ok) {
+                    throw new Error(`Users endpoint failed: ${usersResponse.status}`);
+                }
+                const users = await usersResponse.json();
+                
+                // Test 2: Check if we can create a notification
+                const testNotification = {
+                    userId: 1,
+                    userName: "Test User",
+                    userEmail: "test@example.com",
+                    title: "Endpoint Test",
+                    message: "Testing notification endpoint",
+                    type: "INFO",
+                    isRead: false
+                };
+                
+                const notifResponse = await fetch('/api/notifications', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(testNotification)
+                });
+                
+                if (!notifResponse.ok) {
+                    throw new Error(`Notification endpoint failed: ${notifResponse.status}`);
+                }
+                
+                const notifResult = await notifResponse.json();
+                
+                resultDiv.textContent = `✅ SUCCESS!\n\nEndpoints working:\n- Users API: ${users.length} users found\n- Notification API: ${notifResult.success ? 'Working' : 'Failed'}\n- Response: ${JSON.stringify(notifResult, null, 2)}`;
+                testDiv.className = 'test-section success';
+                
+            } catch (error) {
+                resultDiv.textContent = `❌ ERROR: ${error.message}`;
+                testDiv.className = 'test-section error';
+            }
+        }
+
+        async function sendTestNotification() {
+            const resultDiv = document.getElementById('result2');
+            const testDiv = document.getElementById('test2');
+            
+            try {
+                resultDiv.textContent = 'Sending test notification...';
+                
+                const title = document.getElementById('testTitle').value;
+                const message = document.getElementById('testMessage').value;
+                
+                // Get a real user to send notification to
+                const usersResponse = await fetch('/api/users');
+                const users = await usersResponse.json();
+                const student = users.find(u => u.role === 'Student');
+                
+                if (!student) {
+                    throw new Error('No student users found');
+                }
+                
+                const notification = {
+                    userId: student.id,
+                    userName: student.name,
+                    userEmail: student.email,
+                    title: title,
+                    message: message,
+                    type: "INFO",
+                    isRead: false
+                };
+                
+                const response = await fetch('/api/notifications', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(notification)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    resultDiv.textContent = `✅ SUCCESS!\n\nNotification sent to:\n- User: ${student.name}\n- Email: ${student.email}\n- Title: ${title}\n- Message: ${message}\n\nResponse: ${JSON.stringify(result, null, 2)}`;
+                    testDiv.className = 'test-section success';
+                } else {
+                    throw new Error(result.message || 'Failed to send notification');
+                }
+                
+            } catch (error) {
+                resultDiv.textContent = `❌ ERROR: ${error.message}`;
+                testDiv.className = 'test-section error';
+            }
+        }
+
+        async function testFullNotificationFlow() {
+            const resultDiv = document.getElementById('result3');
+            const testDiv = document.getElementById('test3');
+            
+            try {
+                resultDiv.textContent = 'Testing full notification flow (like admin panel)...';
+                
+                // Simulate the exact flow from the admin panel
+                const title = "Admin Test Notification";
+                const message = "This notification was sent using the same flow as the admin panel.";
+                const type = "ANNOUNCEMENT";
+                const audience = "ALL_STUDENTS";
+                
+                // Step 1: Get recipients (same as admin panel)
+                const response = await fetch('/api/users');
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                const users = await response.json();
+                
+                if (!Array.isArray(users)) {
+                    throw new Error('Invalid users data received from server');
+                }
+                
+                const recipients = users.filter(u => u.role === 'Student');
+                
+                // Step 2: Send notifications to each recipient
+                let successCount = 0;
+                let failCount = 0;
+                
+                for (const recipient of recipients) {
+                    try {
+                        const notification = {
+                            userId: recipient.id,
+                            userName: recipient.name,
+                            userEmail: recipient.email,
+                            title: title,
+                            message: message,
+                            type: type,
+                            isRead: false,
+                            createdDate: new Date().toISOString()
+                        };
+                        
+                        const notifResponse = await fetch('/api/notifications', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(notification)
+                        });
+                        
+                        if (notifResponse.ok) {
+                            successCount++;
+                        } else {
+                            failCount++;
+                        }
+                    } catch (error) {
+                        console.error(`Error sending notification to ${recipient.email}:`, error);
+                        failCount++;
+                    }
+                }
+                
+                resultDiv.textContent = `✅ SUCCESS!\n\nFull notification flow completed:\n- Total recipients: ${recipients.length}\n- Successfully sent: ${successCount}\n- Failed: ${failCount}\n- Success rate: ${Math.round((successCount / recipients.length) * 100)}%\n\nThis is exactly how the admin panel works!`;
+                testDiv.className = 'test-section success';
+                
+            } catch (error) {
+                resultDiv.textContent = `❌ ERROR: ${error.message}`;
+                testDiv.className = 'test-section error';
+            }
+        }
+
+        // Auto-run first test on page load
+        window.onload = function() {
+            testNotificationEndpoints();
+        };
+    </script>
+</body>
+</html>

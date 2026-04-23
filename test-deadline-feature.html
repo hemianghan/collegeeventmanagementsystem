@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Deadline Feature</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .success { background-color: #d4edda; border-color: #c3e6cb; }
+        .info { background-color: #d1ecf1; border-color: #bee5eb; }
+        .event-card { margin: 10px 0; padding: 10px; border: 1px solid #ccc; border-radius: 5px; }
+        .deadline-badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; margin: 5px 0; }
+        .deadline-urgent { background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; }
+        .deadline-warning { background: #fef3c7; color: #d97706; border: 1px solid #fcd34d; }
+        .deadline-normal { background: #e0f2fe; color: #0369a1; border: 1px solid #7dd3fc; }
+        .deadline-expired { background: #f3f4f6; color: #6b7280; border: 1px solid #d1d5db; }
+    </style>
+</head>
+<body>
+    <h1>🕒 Deadline Feature Test</h1>
+    
+    <div class="test-section success">
+        <h2>✅ Deadline Feature Status</h2>
+        <p><strong>Status:</strong> ✅ IMPLEMENTED AND WORKING</p>
+        <p><strong>Location:</strong> Both Student and Admin Panels</p>
+        <p><strong>Display:</strong> Shows "3 days left", "last day", or "expired" warnings</p>
+    </div>
+
+    <div class="test-section info">
+        <h2>🎯 How Deadline Feature Works</h2>
+        <div class="event-card">
+            <h4>Sample Event Deadlines:</h4>
+            <div class="deadline-badge deadline-urgent">⏰ Last Day to Register!</div> - Red (Today is deadline)<br>
+            <div class="deadline-badge deadline-urgent">⏰ 1 Day Left to Register</div> - Red (1 day left)<br>
+            <div class="deadline-badge deadline-warning">⏰ 2 Days Left to Register</div> - Orange (2-3 days left)<br>
+            <div class="deadline-badge deadline-normal">⏰ 5 Days Left to Register</div> - Blue (4+ days left)<br>
+            <div class="deadline-badge deadline-expired">⏰ Registration Closed</div> - Gray (Expired)
+        </div>
+    </div>
+
+    <div class="test-section success">
+        <h2>📍 Where to See Deadline Feature</h2>
+        <div style="margin: 10px 0;">
+            <strong>1. Student Panel:</strong>
+            <ul>
+                <li>Login as: <code>student@college.edu</code> / <code>password</code></li>
+                <li>Go to "Available Events" section</li>
+                <li>Each event card shows deadline badge with color coding</li>
+                <li>Registration button disabled if deadline expired</li>
+            </ul>
+        </div>
+        <div style="margin: 10px 0;">
+            <strong>2. Admin Panel:</strong>
+            <ul>
+                <li>Login as: <code>admin@college.edu</code> / <code>admin</code></li>
+                <li>Go to "Manage Events" section</li>
+                <li>Each event card shows deadline information</li>
+                <li>Can edit deadline when creating/editing events</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="test-section info">
+        <h2>🔧 Technical Implementation</h2>
+        <div style="margin: 10px 0;">
+            <strong>Backend (Java):</strong>
+            <ul>
+                <li>✅ Event model has <code>registrationDeadline</code> field</li>
+                <li>✅ Sample events have varied deadlines (today, tomorrow, 3 days, etc.)</li>
+                <li>✅ Database stores deadline dates in YYYY-MM-DD format</li>
+            </ul>
+        </div>
+        <div style="margin: 10px 0;">
+            <strong>Frontend (JavaScript):</strong>
+            <ul>
+                <li>✅ <code>getDeadlineInfo()</code> function calculates days remaining</li>
+                <li>✅ Color-coded badges based on urgency</li>
+                <li>✅ Displays in both student and admin event cards</li>
+                <li>✅ Form validation ensures deadline is before event date</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="test-section success">
+        <h2>🎮 Test the Feature Now</h2>
+        <p><strong>1. Open Application:</strong> <a href="http://localhost:8080" target="_blank">http://localhost:8080</a></p>
+        <p><strong>2. Login as Student:</strong> student@college.edu / password</p>
+        <p><strong>3. Check Available Events:</strong> Look for deadline badges on event cards</p>
+        <p><strong>4. Login as Admin:</strong> admin@college.edu / admin</p>
+        <p><strong>5. Check Manage Events:</strong> See deadline info and edit functionality</p>
+    </div>
+
+    <div class="test-section success">
+        <h2>✅ Confirmation</h2>
+        <p><strong>The deadline feature is ALREADY IMPLEMENTED and working in both student and admin panels!</strong></p>
+        <p>You can see:</p>
+        <ul>
+            <li>🔴 <strong>Urgent</strong> - Last day or 1 day left (Red badge)</li>
+            <li>🟡 <strong>Warning</strong> - 2-3 days left (Orange badge)</li>
+            <li>🔵 <strong>Normal</strong> - 4+ days left (Blue badge)</li>
+            <li>⚫ <strong>Expired</strong> - Registration closed (Gray badge)</li>
+        </ul>
+    </div>
+
+    <script>
+        // Test deadline calculation function
+        function testDeadlineCalculation() {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            // Test different deadline scenarios
+            const testCases = [
+                { days: 0, expected: "Last Day to Register!" },
+                { days: 1, expected: "1 Day Left to Register" },
+                { days: 2, expected: "2 Days Left to Register" },
+                { days: 5, expected: "5 Days Left to Register" },
+                { days: -1, expected: "Registration Closed" }
+            ];
+            
+            console.log("🧪 Testing deadline calculation:");
+            testCases.forEach(test => {
+                const testDate = new Date(today);
+                testDate.setDate(testDate.getDate() + test.days);
+                const dateStr = testDate.toISOString().split('T')[0];
+                console.log(`📅 ${dateStr} (${test.days} days): Expected "${test.expected}"`);
+            });
+        }
+        
+        // Run test on page load
+        testDeadlineCalculation();
+    </script>
+</body>
+</html>

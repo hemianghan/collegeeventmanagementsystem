@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Registration Count Fix</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f7fa;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .status {
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-weight: 600;
+        }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+        .test-result {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #667eea;
+        }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            margin: 10px 5px;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        .count-display {
+            font-size: 24px;
+            font-weight: 700;
+            color: #667eea;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Registration Count Fix Test</h1>
+        
+        <div class="status info">
+            <strong>Server Status:</strong> <span id="serverStatus">Checking...</span>
+        </div>
+        
+        <div class="test-result">
+            <h3>Test Student Registration Count</h3>
+            <p><strong>Test Student ID:</strong> 1001</p>
+            <p><strong>Test Student Email:</strong> student@college.edu</p>
+            <p><strong>Expected Count:</strong> 12 registrations</p>
+            
+            <button onclick="testRegistrationCount()">👨‍🎓 Test Student Panel</button>
+            <button onclick="testAdminPanel()">👨‍💼 Test Admin Panel</button>
+            <button onclick="testDashboardEndpoint()">📊 Test API Endpoint</button>
+            
+            <div id="testResults"></div>
+        </div>
+        
+        <div class="test-result">
+            <h3>Quick Access Links</h3>
+            <button onclick="window.open('http://localhost:8080', '_blank')">🏠 Open Dashboard</button>
+            <button onclick="window.open('http://localhost:8080/login.html', '_blank')">🔐 Open Login</button>
+            <button onclick="window.open('http://localhost:8080/feedback-board.html', '_blank')">💬 Open Feedback Board</button>
+        </div>
+        
+        <div class="test-result">
+            <h3>✅ Setup Complete - What You'll See:</h3>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0;">
+                <div style="background: #e8f5e8; padding: 15px; border-radius: 10px; border-left: 5px solid #28a745;">
+                    <h4>👨‍🎓 STUDENT PANEL</h4>
+                    <p><strong>"My Registration"</strong></p>
+                    <div class="count-display">12 Events</div>
+                    <p>Test student will see exactly 12 registered events</p>
+                </div>
+                
+                <div style="background: #e8f0ff; padding: 15px; border-radius: 10px; border-left: 5px solid #667eea;">
+                    <h4>👨‍💼 ADMIN PANEL</h4>
+                    <p><strong>"Student Registration"</strong></p>
+                    <div class="count-display">10 per Event</div>
+                    <p>Each event will show 10 different student registrations</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Check server status
+        async function checkServerStatus() {
+            try {
+                const response = await fetch('http://localhost:8080/api/events');
+                if (response.ok) {
+                    document.getElementById('serverStatus').innerHTML = '<span style="color: #28a745;">✅ Running on port 8080</span>';
+                } else {
+                    document.getElementById('serverStatus').innerHTML = '<span style="color: #dc3545;">❌ Server error</span>';
+                }
+            } catch (error) {
+                document.getElementById('serverStatus').innerHTML = '<span style="color: #dc3545;">❌ Not accessible</span>';
+            }
+        }
+
+        // Test registration count for test student
+        async function testRegistrationCount() {
+            const resultsDiv = document.getElementById('testResults');
+            resultsDiv.innerHTML = '<div class="status info">🔄 Testing registration setup...</div>';
+            
+            try {
+                // Test STUDENT PANEL: My Registration count
+                const studentResponse = await fetch('http://localhost:8080/api/registrations/user/1001/detailed');
+                const studentData = await studentResponse.json();
+                const studentCount = studentData.length;
+                
+                // Test ADMIN PANEL: Pick first event and count its registrations
+                const eventsResponse = await fetch('http://localhost:8080/api/events');
+                const events = await eventsResponse.json();
+                
+                let adminTestResult = '';
+                if (events.length > 0) {
+                    const firstEvent = events[0];
+                    const adminResponse = await fetch(`http://localhost:8080/api/registrations/event/${firstEvent.id}`);
+                    const adminData = await adminResponse.json();
+                    const adminCount = adminData.length;
+                    
+                    adminTestResult = `
+                        <strong>📊 ADMIN PANEL TEST:</strong><br>
+                        Event: "${firstEvent.title}"<br>
+                        Registrations per event: <span class="count-display">${adminCount}</span><br>
+                        ${adminCount === 10 ? '✅ Perfect! 10 registrations per event' : '❌ Expected 10 registrations'}
+                    `;
+                }
+                
+                let resultHTML = `
+                    <div class="status success">
+                        <strong>👨‍🎓 STUDENT PANEL TEST:</strong><br>
+                        Test Student (student@college.edu)<br>
+                        My Registration count: <span class="count-display">${studentCount}</span><br>
+                        ${studentCount === 12 ? '✅ Perfect! 12 registrations for student' : '❌ Expected 12 registrations'}<br><br>
+                        ${adminTestResult}
+                    </div>
+                `;
+                
+                if (studentCount === 12) {
+                    resultHTML += '<div class="status success">🎉 <strong>STUDENT PANEL FIX CONFIRMED!</strong> Students will see exactly 12 registrations in "My Registration"!</div>';
+                }
+                
+                resultsDiv.innerHTML = resultHTML;
+                
+            } catch (error) {
+                resultsDiv.innerHTML = '<div class="status error">❌ Error testing: ' + error.message + '</div>';
+            }
+        }
+
+        // Test admin panel specifically
+        async function testAdminPanel() {
+            const resultsDiv = document.getElementById('testResults');
+            resultsDiv.innerHTML = '<div class="status info">🔄 Testing admin panel data...</div>';
+            
+            try {
+                const eventsResponse = await fetch('http://localhost:8080/api/events');
+                const events = await eventsResponse.json();
+                
+                let adminResults = '<div class="status success"><strong>📊 ADMIN PANEL - Registrations per Event:</strong><br><br>';
+                
+                for (let i = 0; i < Math.min(5, events.length); i++) {
+                    const event = events[i];
+                    const regResponse = await fetch(`http://localhost:8080/api/registrations/event/${event.id}`);
+                    const registrations = await regResponse.json();
+                    
+                    adminResults += `
+                        <strong>${i + 1}. ${event.title}</strong><br>
+                        Registrations: <span class="count-display">${registrations.length}</span>
+                        ${registrations.length === 10 ? ' ✅' : ' ❌'}<br><br>
+                    `;
+                }
+                
+                adminResults += '</div>';
+                resultsDiv.innerHTML = adminResults;
+                
+            } catch (error) {
+                resultsDiv.innerHTML = '<div class="status error">❌ Error: ' + error.message + '</div>';
+            }
+        }
+
+        // Test dashboard endpoint specifically
+        async function testDashboardEndpoint() {
+            const resultsDiv = document.getElementById('testResults');
+            resultsDiv.innerHTML = '<div class="status info">🔄 Testing dashboard endpoint...</div>';
+            
+            try {
+                const response = await fetch('http://localhost:8080/api/registrations/user/1001/detailed');
+                const data = await response.json();
+                
+                resultsDiv.innerHTML = `
+                    <div class="status success">
+                        <strong>✅ Dashboard Endpoint Test:</strong><br>
+                        Endpoint: /api/registrations/user/1001/detailed<br>
+                        Response: ${data.length} registrations<br>
+                        Status: ${response.status} ${response.statusText}
+                    </div>
+                    <div class="status info">
+                        <strong>Sample Registration:</strong><br>
+                        ${data.length > 0 ? `Event: ${data[0].event.title}<br>Student: ${data[0].registration.userName}` : 'No registrations found'}
+                    </div>
+                `;
+            } catch (error) {
+                resultsDiv.innerHTML = '<div class="status error">❌ Error: ' + error.message + '</div>';
+            }
+        }
+
+        // Check server status on load
+        checkServerStatus();
+    </script>
+</body>
+</html>

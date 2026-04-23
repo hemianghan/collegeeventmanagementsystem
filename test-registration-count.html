@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Registration Count</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .result { margin: 10px 0; padding: 10px; border: 1px solid #ccc; }
+        .success { background: #d4edda; }
+        .error { background: #f8d7da; }
+        button { padding: 10px 20px; margin: 5px; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Registration Count Test</h1>
+    
+    <h2>Test Student Registration Count</h2>
+    <button onclick="testStudentRegistrations()">Test Student Count (ID: 1001)</button>
+    <button onclick="clearAndCreateSample()">Clear & Create Sample Data</button>
+    <button onclick="checkAllRegistrations()">Check All Registrations</button>
+    
+    <div id="results"></div>
+
+    <script>
+        async function testStudentRegistrations() {
+            const results = document.getElementById('results');
+            results.innerHTML = '<div>Testing student registrations...</div>';
+            
+            try {
+                // Test the student registration count for user ID 1001
+                const response = await fetch('/api/registrations/user/1001/detailed');
+                const registrations = await response.json();
+                
+                results.innerHTML = `
+                    <div class="result success">
+                        <h3>✅ Student Registration Test (ID: 1001)</h3>
+                        <p><strong>Count:</strong> ${registrations.length} registrations</p>
+                        <p><strong>Expected:</strong> 10-12 registrations</p>
+                        <p><strong>Status:</strong> ${registrations.length >= 10 && registrations.length <= 12 ? '✅ PASS' : '❌ FAIL'}</p>
+                        <details>
+                            <summary>View Details</summary>
+                            <pre>${JSON.stringify(registrations, null, 2)}</pre>
+                        </details>
+                    </div>
+                `;
+            } catch (error) {
+                results.innerHTML = `
+                    <div class="result error">
+                        <h3>❌ Error Testing Student Registrations</h3>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        async function clearAndCreateSample() {
+            const results = document.getElementById('results');
+            results.innerHTML = '<div>Clearing and creating sample data...</div>';
+            
+            try {
+                // Step 1: Clear all registrations
+                const clearResponse = await fetch('/api/registrations/clear-all', {
+                    method: 'DELETE'
+                });
+                const clearResult = await clearResponse.json();
+                
+                // Step 2: Create sample registrations
+                const createResponse = await fetch('/api/registrations/create-sample', {
+                    method: 'POST'
+                });
+                const createResult = await createResponse.json();
+                
+                results.innerHTML = `
+                    <div class="result success">
+                        <h3>✅ Clear & Create Sample Data</h3>
+                        <p><strong>Cleared:</strong> ${clearResult.deletedCount} registrations</p>
+                        <p><strong>Created:</strong> ${createResult.registrationCount} sample registrations</p>
+                        <p><strong>Test Student Email:</strong> ${createResult.studentEmail}</p>
+                        <button onclick="testStudentRegistrations()">Test Student Count Now</button>
+                    </div>
+                `;
+            } catch (error) {
+                results.innerHTML = `
+                    <div class="result error">
+                        <h3>❌ Error Creating Sample Data</h3>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        async function checkAllRegistrations() {
+            const results = document.getElementById('results');
+            results.innerHTML = '<div>Checking all registrations...</div>';
+            
+            try {
+                // Get all registrations
+                const response = await fetch('/api/registrations/user/1001');
+                const registrations = await response.json();
+                
+                results.innerHTML = `
+                    <div class="result success">
+                        <h3>📊 All Registrations Check</h3>
+                        <p><strong>Total Count:</strong> ${registrations.length}</p>
+                        <p><strong>User ID 1001 Count:</strong> ${registrations.length}</p>
+                        <details>
+                            <summary>View All Registrations</summary>
+                            <pre>${JSON.stringify(registrations, null, 2)}</pre>
+                        </details>
+                    </div>
+                `;
+            } catch (error) {
+                results.innerHTML = `
+                    <div class="result error">
+                        <h3>❌ Error Checking Registrations</h3>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>

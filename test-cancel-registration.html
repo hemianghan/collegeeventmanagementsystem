@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Cancel Registration Feature</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f7fa; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .card { background: white; padding: 20px; margin: 15px 0; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .success { background: #d4edda; color: #155724; border-left: 5px solid #28a745; }
+        .info { background: #d1ecf1; color: #0c5460; border-left: 5px solid #17a2b8; }
+        .warning { background: #fff3cd; color: #856404; border-left: 5px solid #ffc107; }
+        h3 { margin-top: 0; }
+        button { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 12px 24px; border-radius: 25px; cursor: pointer; font-weight: 600; margin: 5px; }
+        button:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3); }
+        .feature-list { list-style: none; padding: 0; }
+        .feature-list li { padding: 10px 0; border-bottom: 1px solid #eee; }
+        .feature-list li:before { content: "✅ "; color: #28a745; font-weight: bold; }
+        .step { background: #f8f9fa; padding: 15px; margin: 10px 0; border-left: 4px solid #667eea; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 Cancel Registration Feature</h1>
+        
+        <div class="card success">
+            <h3>✅ Feature Added Successfully!</h3>
+            <p>Students can now cancel their event registrations from the "My Events" section.</p>
+        </div>
+        
+        <div class="card info">
+            <h3>🎨 What's New:</h3>
+            <ul class="feature-list">
+                <li><strong>Cancel Button:</strong> Red "❌ Cancel Registration" button added to each event</li>
+                <li><strong>Confirmation Dialog:</strong> Asks for confirmation before cancelling</li>
+                <li><strong>Backend Integration:</strong> Uses DELETE API endpoint to remove registration</li>
+                <li><strong>Auto Refresh:</strong> Updates the list and badge count after cancellation</li>
+                <li><strong>Available for All:</strong> Works for both paid and pending registrations</li>
+            </ul>
+        </div>
+        
+        <div class="card">
+            <h3>🧪 How to Test:</h3>
+            
+            <div class="step">
+                <strong>Step 1: Login as Student</strong>
+                <p>Go to <a href="http://localhost:8080/login.html" target="_blank">Login Page</a></p>
+                <p>Use: <code>student@college.edu</code> or <code>hemishaanghan1@gmail.com</code></p>
+                <p>Password: <code>password</code></p>
+            </div>
+            
+            <div class="step">
+                <strong>Step 2: Open My Events</strong>
+                <p>Click "My Events" in the sidebar</p>
+                <p>You should see 12 registered events</p>
+            </div>
+            
+            <div class="step">
+                <strong>Step 3: Test Cancel Registration</strong>
+                <p>Each event card now has two buttons:</p>
+                <ul>
+                    <li>🟢 <strong>Download Receipt</strong> (green button)</li>
+                    <li>🔴 <strong>Cancel Registration</strong> (red button)</li>
+                </ul>
+                <p>Click the red "Cancel Registration" button on any event</p>
+            </div>
+            
+            <div class="step">
+                <strong>Step 4: Confirm Cancellation</strong>
+                <p>A confirmation dialog will appear</p>
+                <p>Click "OK" to confirm or "Cancel" to keep the registration</p>
+            </div>
+            
+            <div class="step">
+                <strong>Step 5: Verify Changes</strong>
+                <p>After cancellation:</p>
+                <ul>
+                    <li>✅ Event is removed from the list</li>
+                    <li>✅ Badge count decreases (e.g., 12 → 11)</li>
+                    <li>✅ Success message appears</li>
+                    <li>✅ Data is deleted from backend database</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="card warning">
+            <h3>⚠️ Important Notes:</h3>
+            <ul>
+                <li><strong>Permanent Action:</strong> Cancellation cannot be undone</li>
+                <li><strong>Backend Deletion:</strong> Registration is permanently removed from database</li>
+                <li><strong>Re-registration:</strong> Student can register again for the same event if needed</li>
+                <li><strong>Admin View:</strong> Cancelled registrations won't appear in admin panel</li>
+            </ul>
+        </div>
+        
+        <div class="card info">
+            <h3>🔧 Technical Implementation:</h3>
+            <p><strong>Frontend:</strong></p>
+            <ul>
+                <li>Added red "Cancel Registration" button to each event card</li>
+                <li>Confirmation dialog before deletion</li>
+                <li>Auto-refresh after successful cancellation</li>
+            </ul>
+            <p><strong>Backend:</strong></p>
+            <ul>
+                <li>Uses existing DELETE endpoint: <code>/api/registrations/cancel/{userId}/{eventId}</code></li>
+                <li>Removes registration from database</li>
+                <li>Returns success/error response</li>
+            </ul>
+        </div>
+        
+        <button onclick="window.open('http://localhost:8080/login.html', '_blank')">🔐 Test Now - Login</button>
+        <button onclick="window.open('http://localhost:8080/dashboard.html', '_blank')">📊 Open Dashboard</button>
+    </div>
+</body>
+</html>

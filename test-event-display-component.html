@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test EventDisplayComponent</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f5f7fa;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .events-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+        .event-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            overflow: hidden;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+        .event-card:hover {
+            transform: translateY(-5px);
+            border-color: #667eea;
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.15);
+        }
+        .event-image {
+            width: 100%;
+            height: 180px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            color: white;
+        }
+        .event-content {
+            padding: 20px;
+        }
+        .event-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 12px;
+        }
+        .event-details {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .event-category {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 12px;
+        }
+        .category-cultural { background: #fff5f5; color: #e53e3e; }
+        .category-fun { background: #fffaf0; color: #dd6b20; }
+        .category-technical { background: #f0fff4; color: #38a169; }
+        .category-sports { background: #f0f4ff; color: #667eea; }
+        .btn-register {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-register:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+        .btn-register:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .no-events {
+            text-align: center;
+            padding: 50px;
+            color: #666;
+        }
+        .no-events .icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+        .feedback-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1001;
+            max-width: 400px;
+        }
+        .success-message, .error-message {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .success-message {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .error-message {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>EventDisplayComponent Test</h1>
+        <p>Testing the EventDisplayComponent with mock data</p>
+        
+        <div class="feedback-container" id="feedback-container"></div>
+        
+        <div>
+            <button onclick="testLoadEvents()" style="padding: 10px 20px; margin: 10px; background: #667eea; color: white; border: none; border-radius: 5px; cursor: pointer;">Test Load Events</button>
+            <button onclick="testRegistration()" style="padding: 10px 20px; margin: 10px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer;">Test Registration</button>
+            <button onclick="testCancellation()" style="padding: 10px 20px; margin: 10px; background: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer;">Test Cancellation</button>
+        </div>
+        
+        <div class="events-grid" id="eventsContainer">
+            <!-- Events will be loaded here -->
+        </div>
+    </div>
+
+    <script>
+        // Mock data for testing
+        const mockEvents = [
+            {
+                id: 1,
+                title: "Annual Tech Conference",
+                date: "2023-12-01",
+                location: "Main Auditorium",
+                description: "A comprehensive tech conference featuring latest innovations",
+                category: "Technical",
+                registrationFee: 150
+            },
+            {
+                id: 2,
+                title: "Cultural Night 2023",
+                date: "2023-11-15",
+                location: "College Ground",
+                description: "Celebrate diversity with music, dance, and food",
+                category: "Cultural",
+                registrationFee: 100
+            },
+            {
+                id: 3,
+                title: "Sports Championship",
+                date: "2023-10-20",
+                location: "Sports Complex",
+                description: "Inter-college sports competition",
+                category: "Sports",
+                registrationFee: 75
+            }
+        ];
+
+        // Mock user data
+        const userId = 1001;
+        const userName = "Test Student";
+        const userEmail = "test@college.edu";
+
+        // EventDisplayComponent class (copied from dashboard.html)
+        class EventDisplayComponent {
+            constructor(containerId, registrationManager) {
+                this.containerId = containerId;
+                this.registrationManager = registrationManager;
+                this.events = [];
+                this.userRegistrations = new Set();
+            }
+
+            async loadEvents() {
+                try {
+                    // Use mock data instead of API call for testing
+                    const allEvents = mockEvents;
+                    
+                    // Filter to show exactly 12 past events
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    
+                    const pastEvents = allEvents.filter(event => {
+                        const eventDate = new Date(event.date);
+                        return eventDate < today;
+                    });
+                    
+                    // Sort past events by date (most recent first) and take exactly 12
+                    pastEvents.sort((a, b) => new Date(b.date) - new Date(a.date));
+                    this.events = pastEvents.slice(0, 12);
+                    
+                    // Load user registrations to determine button states
+                    if (this.registrationManager) {
+                        await this.registrationManager.getUserRegistrations();
+                        this.userRegistrations = this.registrationManager.userRegistrations;
+                    }
+                    
+                    this.renderEventList(this.events);
+                    
+                } catch (error) {
+                    console.error('Error loading events:', error);
+                    this.showError('Failed to load events. Please check your connection and try again.');
+                }
+            }
+
+            renderEventList(events) {
+                const container = document.getElementById(this.containerId);
+                if (!container) {
+                    console.error(`Container with ID '${this.containerId}' not found`);
+                    return;
+                }
+
+                if (events.length === 0) {
+                    container.innerHTML = `
+                        <div class="no-events">
+                            <div class="icon">📅</div>
+                            <h3>No Past Events Available</h3>
+                            <p>There are no past events to display at this time.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = events.map(event => this.renderEventCard(event)).join('');
+            }
+
+            renderEventCard(event) {
+                const isRegistered = this.userRegistrations.has(event.id);
+                const categoryInfo = this.getCategoryInfo(event.category);
+                const eventDate = new Date(event.date);
+                const formattedDate = eventDate.toLocaleDateString('en-US', {
+                    weekday: 'short',
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                });
+
+                return `
+                    <div class="event-card" data-event-id="${event.id}">
+                        <div class="event-image">
+                            ${categoryInfo.icon}
+                        </div>
+                        <div class="event-content">
+                            <div class="event-title">${event.title || 'Untitled Event'}</div>
+                            <div class="event-details">
+                                <span>📅</span> ${formattedDate}
+                            </div>
+                            <div class="event-details">
+                                <span>📍</span> ${event.location || 'Location TBA'}
+                            </div>
+                            <div class="event-details">
+                                <span>📝</span> ${event.description || 'No description'}
+                            </div>
+                            <div class="event-details">
+                                <span>💰</span> Registration Fee: ₹${event.registrationFee || 100}
+                            </div>
+                            ${event.category ? `<span class="event-category ${categoryInfo.class}">${event.category}</span>` : ''}
+                            <button 
+                                class="btn-register" 
+                                id="btn-${event.id}"
+                                onclick="eventDisplayComponent.handleRegistrationClick(${event.id}, '${event.title}', '${formattedDate}', '${event.location}', ${event.registrationFee || 100})"
+                                style="margin-top: 15px;"
+                                ${isRegistered ? 'data-registered="true"' : 'data-registered="false"'}
+                            >
+                                ${isRegistered ? 'Cancel Registration' : 'Register'}
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+
+            updateEventRegistrationState(eventId, isRegistered) {
+                const button = document.getElementById(`btn-${eventId}`);
+                if (button) {
+                    button.textContent = isRegistered ? 'Cancel Registration' : 'Register';
+                    button.setAttribute('data-registered', isRegistered.toString());
+                    
+                    // Update internal state
+                    if (isRegistered) {
+                        this.userRegistrations.add(eventId);
+                    } else {
+                        this.userRegistrations.delete(eventId);
+                    }
+                }
+            }
+
+            async handleRegistrationClick(eventId, title, date, location, fee) {
+                const button = document.getElementById(`btn-${eventId}`);
+                const isCurrentlyRegistered = button.getAttribute('data-registered') === 'true';
+                
+                if (!this.registrationManager) {
+                    console.error('Registration manager not available');
+                    return;
+                }
+
+                // Disable button during operation
+                button.disabled = true;
+                button.textContent = isCurrentlyRegistered ? 'Cancelling...' : 'Registering...';
+
+                try {
+                    if (isCurrentlyRegistered) {
+                        await this.registrationManager.cancelRegistration(eventId, title);
+                    } else {
+                        await this.registrationManager.registerForEvent(eventId, title, date, location, fee);
+                    }
+                } catch (error) {
+                    console.error('Registration operation failed:', error);
+                    // Reset button state on error
+                    button.textContent = isCurrentlyRegistered ? 'Cancel Registration' : 'Register';
+                } finally {
+                    button.disabled = false;
+                }
+            }
+
+            getCategoryInfo(category) {
+                const categoryMap = {
+                    'Cultural': { icon: '🎭', class: 'category-cultural' },
+                    'Fun': { icon: '🎉', class: 'category-fun' },
+                    'Technical': { icon: '💻', class: 'category-technical' },
+                    'Sports': { icon: '⚽', class: 'category-sports' }
+                };
+                return categoryMap[category] || { icon: '📅', class: 'category-cultural' };
+            }
+
+            showError(message) {
+                const container = document.getElementById(this.containerId);
+                if (container) {
+                    container.innerHTML = `
+                        <div class="no-events">
+                            <div class="icon" style="color: #e53e3e;">⚠️</div>
+                            <h3>Error Loading Events</h3>
+                            <p>${message}</p>
+                            <button class="btn-register" onclick="eventDisplayComponent.loadEvents()" style="margin-top: 15px;">
+                                Try Again
+                            </button>
+                        </div>
+                    `;
+                }
+            }
+        }
+
+        // Mock RegistrationManager for testing
+        class MockRegistrationManager {
+            constructor(userId, myEventsCounter, feedbackManager) {
+                this.userId = userId;
+                this.myEventsCounter = myEventsCounter;
+                this.feedbackManager = feedbackManager;
+                this.userRegistrations = new Set([2]); // Mock: user is registered for event 2
+            }
+
+            async registerForEvent(eventId, eventTitle) {
+                // Simulate API call delay
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                this.userRegistrations.add(eventId);
+                eventDisplayComponent.updateEventRegistrationState(eventId, true);
+                this.myEventsCounter.increment();
+                this.feedbackManager.showSuccess(`Successfully registered for "${eventTitle}"`);
+            }
+
+            async cancelRegistration(eventId, eventTitle) {
+                // Simulate API call delay
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                this.userRegistrations.delete(eventId);
+                eventDisplayComponent.updateEventRegistrationState(eventId, false);
+                this.myEventsCounter.decrement();
+                this.feedbackManager.showSuccess(`Successfully cancelled registration for "${eventTitle}"`);
+            }
+
+            async getUserRegistrations() {
+                return this.userRegistrations;
+            }
+
+            isUserRegistered(eventId) {
+                return this.userRegistrations.has(eventId);
+            }
+        }
+
+        // Mock MyEventsCounter
+        class MockMyEventsCounter {
+            constructor() {
+                this.count = 1; // Start with 1 (user registered for event 2)
+            }
+
+            updateCount(newCount) {
+                this.count = newCount;
+                console.log(`Event count updated to: ${this.count}`);
+            }
+
+            increment() {
+                this.updateCount(this.count + 1);
+            }
+
+            decrement() {
+                this.updateCount(Math.max(0, this.count - 1));
+            }
+        }
+
+        // Mock FeedbackManager
+        class MockFeedbackManager {
+            constructor(containerId) {
+                this.containerId = containerId;
+                this.currentTimeout = null;
+            }
+
+            showSuccess(message) {
+                this.showMessage(message, 'success');
+            }
+
+            showError(message) {
+                this.showMessage(message, 'error');
+            }
+
+            showMessage(message, type) {
+                if (this.currentTimeout) {
+                    clearTimeout(this.currentTimeout);
+                }
+
+                let container = document.getElementById(this.containerId);
+                if (!container) {
+                    container = document.createElement('div');
+                    container.id = this.containerId;
+                    container.className = 'feedback-container';
+                    document.body.appendChild(container);
+                }
+
+                const messageClass = type === 'success' ? 'success-message' : 'error-message';
+                container.innerHTML = `<div class="${messageClass}">${message}</div>`;
+
+                this.autoHideMessage();
+            }
+
+            clearMessages() {
+                const container = document.getElementById(this.containerId);
+                if (container) {
+                    container.innerHTML = '';
+                }
+                if (this.currentTimeout) {
+                    clearTimeout(this.currentTimeout);
+                    this.currentTimeout = null;
+                }
+            }
+
+            autoHideMessage(delay = 5000) {
+                this.currentTimeout = setTimeout(() => {
+                    this.clearMessages();
+                }, delay);
+            }
+        }
+
+        // Initialize components
+        const feedbackManager = new MockFeedbackManager('feedback-container');
+        const myEventsCounter = new MockMyEventsCounter();
+        const registrationManager = new MockRegistrationManager(userId, myEventsCounter, feedbackManager);
+        const eventDisplayComponent = new EventDisplayComponent('eventsContainer', registrationManager);
+
+        // Test functions
+        function testLoadEvents() {
+            console.log('Testing loadEvents...');
+            eventDisplayComponent.loadEvents();
+        }
+
+        function testRegistration() {
+            console.log('Testing registration for event 1...');
+            eventDisplayComponent.handleRegistrationClick(1, 'Annual Tech Conference', 'Fri, Dec 1, 2023', 'Main Auditorium', 150);
+        }
+
+        function testCancellation() {
+            console.log('Testing cancellation for event 2...');
+            eventDisplayComponent.handleRegistrationClick(2, 'Cultural Night 2023', 'Wed, Nov 15, 2023', 'College Ground', 100);
+        }
+
+        // Auto-load events on page load
+        window.onload = function() {
+            testLoadEvents();
+        };
+    </script>
+</body>
+</html>

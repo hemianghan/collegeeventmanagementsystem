@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Student Profile Feature</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .success { background-color: #d4edda; border-color: #c3e6cb; }
+        .info { background-color: #d1ecf1; border-color: #bee5eb; }
+        .feature { margin: 10px 0; }
+        .status { font-weight: bold; }
+        .details { font-size: 14px; color: #666; margin-left: 20px; }
+        .test-button { padding: 10px 20px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        .test-button:hover { background: #0056b3; }
+        .result { margin: 10px 0; padding: 10px; border-radius: 5px; }
+        .result.success { background: #d4edda; color: #155724; }
+        .result.error { background: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Student Profile Feature Test</h1>
+    
+    <div class="test-section success">
+        <h2>✅ Implementation Status</h2>
+        <div class="feature">
+            <div class="status">Backend Implementation: ✅ COMPLETE</div>
+            <div class="details">
+                • ProfileController with REST endpoints<br>
+                • CertificateService for business logic<br>
+                • Enhanced RegistrationRepository with certificate counting<br>
+                • DTOs for profile operations<br>
+                • Sample certificates added to existing registrations
+            </div>
+        </div>
+        
+        <div class="feature">
+            <div class="status">Frontend Implementation: ✅ COMPLETE</div>
+            <div class="details">
+                • Profile navigation item added to student dashboard<br>
+                • Profile modal with certificate display, password change, and profile editing<br>
+                • JavaScript functions for API integration<br>
+                • Form validation and error handling<br>
+                • Modal close handlers and window click events
+            </div>
+        </div>
+    </div>
+
+    <div class="test-section info">
+        <h2>🔧 API Endpoint Tests</h2>
+        
+        <div class="feature">
+            <div class="status">Test Certificate Count API</div>
+            <button class="test-button" onclick="testCertificateCount()">Test GET /api/profile/certificates/count</button>
+            <div id="certificateResult" class="result" style="display: none;"></div>
+        </div>
+        
+        <div class="feature">
+            <div class="status">Test Profile Info API</div>
+            <button class="test-button" onclick="testProfileInfo()">Test GET /api/profile/info</button>
+            <div id="profileInfoResult" class="result" style="display: none;"></div>
+        </div>
+        
+        <div class="feature">
+            <div class="status">Test Password Change API</div>
+            <button class="test-button" onclick="testPasswordChange()">Test PUT /api/profile/password</button>
+            <div id="passwordResult" class="result" style="display: none;"></div>
+        </div>
+        
+        <div class="feature">
+            <div class="status">Test Profile Update API</div>
+            <button class="test-button" onclick="testProfileUpdate()">Test PUT /api/profile/info</button>
+            <div id="profileUpdateResult" class="result" style="display: none;"></div>
+        </div>
+    </div>
+
+    <div class="test-section success">
+        <h2>🎮 Manual Testing Instructions</h2>
+        <div class="feature">
+            <div class="status">1. Open Student Dashboard</div>
+            <div class="details">
+                • Go to: <a href="http://localhost:8080" target="_blank">http://localhost:8080</a><br>
+                • Login as: <code>student@college.edu</code> / <code>password</code><br>
+                • Look for new "👤 Profile" navigation item in sidebar
+            </div>
+        </div>
+        
+        <div class="feature">
+            <div class="status">2. Test Profile Features</div>
+            <div class="details">
+                • Click "Profile" to open the profile modal<br>
+                • Verify certificate count is displayed (should show earned certificates)<br>
+                • Test profile name editing (email should be read-only)<br>
+                • Test password change with validation<br>
+                • Verify success/error messages display properly
+            </div>
+        </div>
+        
+        <div class="feature">
+            <div class="status">3. Test Different Student Account</div>
+            <div class="details">
+                • Logout and login as: <code>hemishaanghan1@gmail.com</code> / <code>password</code><br>
+                • Verify different certificate count for different student<br>
+                • Test that each student only sees their own data
+            </div>
+        </div>
+    </div>
+
+    <div class="test-section info">
+        <h2>📊 Expected Results</h2>
+        <div class="feature">
+            <div class="status">Certificate Counts:</div>
+            <div class="details">
+                • Test Student (student@college.edu): ~9-10 certificates<br>
+                • Hemishaan (hemishaanghan1@gmail.com): ~8-9 certificates<br>
+                • Counts based on 60-70% of their registrations having certificates
+            </div>
+        </div>
+        
+        <div class="feature">
+            <div class="status">Profile Information:</div>
+            <div class="details">
+                • Name field: Editable, required validation<br>
+                • Email field: Read-only, displays current email<br>
+                • Password change: Requires current password, min 6 characters
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function testCertificateCount() {
+            const resultDiv = document.getElementById('certificateResult');
+            resultDiv.style.display = 'block';
+            resultDiv.textContent = 'Testing...';
+            
+            try {
+                const response = await fetch('/api/profile/certificates/count');
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    resultDiv.className = 'result success';
+                    resultDiv.innerHTML = `
+                        ✅ SUCCESS<br>
+                        Certificate Count: ${data.certificateCount}<br>
+                        Formatted: ${data.formattedCount}<br>
+                        Has Certificates: ${data.hasCertificates}
+                    `;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.textContent = `❌ ERROR: ${data.message || 'Unknown error'}`;
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = `❌ NETWORK ERROR: ${error.message}`;
+            }
+        }
+
+        async function testProfileInfo() {
+            const resultDiv = document.getElementById('profileInfoResult');
+            resultDiv.style.display = 'block';
+            resultDiv.textContent = 'Testing...';
+            
+            try {
+                const response = await fetch('/api/profile/info');
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    resultDiv.className = 'result success';
+                    resultDiv.innerHTML = `
+                        ✅ SUCCESS<br>
+                        Name: ${data.profile.name}<br>
+                        Email: ${data.profile.email}
+                    `;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.textContent = `❌ ERROR: ${data.message || 'Unknown error'}`;
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = `❌ NETWORK ERROR: ${error.message}`;
+            }
+        }
+
+        async function testPasswordChange() {
+            const resultDiv = document.getElementById('passwordResult');
+            resultDiv.style.display = 'block';
+            resultDiv.textContent = 'Testing validation (invalid data)...';
+            
+            try {
+                const response = await fetch('/api/profile/password', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        currentPassword: '',
+                        newPassword: '123'
+                    })
+                });
+                const data = await response.json();
+                
+                if (response.status === 400) {
+                    resultDiv.className = 'result success';
+                    resultDiv.innerHTML = `
+                        ✅ VALIDATION WORKING<br>
+                        Status: ${response.status}<br>
+                        Message: ${data.message}
+                    `;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.textContent = `❌ UNEXPECTED: ${data.message || 'Should have failed validation'}`;
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = `❌ NETWORK ERROR: ${error.message}`;
+            }
+        }
+
+        async function testProfileUpdate() {
+            const resultDiv = document.getElementById('profileUpdateResult');
+            resultDiv.style.display = 'block';
+            resultDiv.textContent = 'Testing validation (empty name)...';
+            
+            try {
+                const response = await fetch('/api/profile/info', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name: ''
+                    })
+                });
+                const data = await response.json();
+                
+                if (response.status === 400) {
+                    resultDiv.className = 'result success';
+                    resultDiv.innerHTML = `
+                        ✅ VALIDATION WORKING<br>
+                        Status: ${response.status}<br>
+                        Message: ${data.message}
+                    `;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.textContent = `❌ UNEXPECTED: ${data.message || 'Should have failed validation'}`;
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = `❌ NETWORK ERROR: ${error.message}`;
+            }
+        }
+
+        // Auto-test on page load
+        window.onload = function() {
+            console.log('Student Profile Feature Test Page Loaded');
+            console.log('Server should be running on http://localhost:8080');
+            console.log('Use the test buttons above to verify API endpoints');
+        };
+    </script>
+</body>
+</html>

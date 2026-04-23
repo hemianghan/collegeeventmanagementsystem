@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Certificate Verification</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .verification-container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+        }
+
+        .logo {
+            margin-bottom: 30px;
+        }
+
+        .logo h1 {
+            color: #667eea;
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .logo p {
+            color: #666;
+            font-size: 16px;
+        }
+
+        .verification-form {
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s;
+            background: #f8f9fa;
+            text-align: center;
+            font-family: monospace;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+        }
+
+        .btn-verify {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .btn-verify:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-verify:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .result-container {
+            display: none;
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 20px;
+        }
+
+        .result-valid {
+            background: #d4edda;
+            border: 2px solid #28a745;
+            color: #155724;
+        }
+
+        .result-invalid {
+            background: #f8d7da;
+            border: 2px solid #dc3545;
+            color: #721c24;
+        }
+
+        .result-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .result-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .certificate-details {
+            text-align: left;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 15px;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .detail-value {
+            color: #666;
+        }
+
+        .category-badge {
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .category-participant {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .category-winner {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .category-runner-up {
+            background: #f3e5f5;
+            color: #7b1fa2;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .back-link {
+            margin-top: 30px;
+        }
+
+        .back-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .back-link a:hover {
+            color: #5a6fd8;
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .verification-container {
+                padding: 30px 20px;
+            }
+            
+            .logo h1 {
+                font-size: 28px;
+            }
+            
+            .detail-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="verification-container">
+        <div class="logo">
+            <h1>🔍 Certificate Verification</h1>
+            <p>Verify the authenticity of certificates</p>
+        </div>
+
+        <div class="verification-form">
+            <div class="form-group">
+                <label for="certificateId">Certificate ID</label>
+                <input 
+                    type="text" 
+                    id="certificateId" 
+                    placeholder="Enter Certificate ID (e.g., CERT-ABC12345)"
+                    required
+                >
+            </div>
+
+            <button class="btn-verify" onclick="verifyCertificate()">
+                🔍 Verify Certificate
+            </button>
+        </div>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Verifying certificate...</p>
+        </div>
+
+        <div class="result-container" id="resultContainer">
+            <div class="result-icon" id="resultIcon"></div>
+            <div class="result-title" id="resultTitle"></div>
+            <div id="resultMessage"></div>
+            <div class="certificate-details" id="certificateDetails" style="display: none;">
+                <!-- Certificate details will be loaded here -->
+            </div>
+        </div>
+
+        <div class="back-link">
+            <a href="/dashboard.html">← Back to Dashboard</a>
+        </div>
+    </div>
+
+    <script>
+        // Get certificate ID from URL parameter if provided
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const certId = urlParams.get('id');
+            if (certId) {
+                document.getElementById('certificateId').value = certId;
+                verifyCertificate();
+            }
+        };
+
+        async function verifyCertificate() {
+            const certificateId = document.getElementById('certificateId').value.trim();
+            
+            if (!certificateId) {
+                alert('Please enter a Certificate ID');
+                return;
+            }
+
+            const loading = document.getElementById('loading');
+            const resultContainer = document.getElementById('resultContainer');
+            const resultIcon = document.getElementById('resultIcon');
+            const resultTitle = document.getElementById('resultTitle');
+            const resultMessage = document.getElementById('resultMessage');
+            const certificateDetails = document.getElementById('certificateDetails');
+
+            // Show loading
+            loading.style.display = 'block';
+            resultContainer.style.display = 'none';
+
+            try {
+                const response = await fetch(`/api/certificates/verify/${certificateId}`);
+                const result = await response.json();
+
+                loading.style.display = 'none';
+                resultContainer.style.display = 'block';
+
+                if (result.valid) {
+                    // Valid certificate
+                    resultContainer.className = 'result-container result-valid';
+                    resultIcon.textContent = '✅';
+                    resultTitle.textContent = 'Certificate Valid';
+                    resultMessage.textContent = 'This certificate is authentic and has been verified.';
+                    
+                    // Show certificate details
+                    const cert = result.certificate;
+                    const issuedDate = new Date(cert.issuedDate || cert.generatedDate);
+                    const formattedDate = issuedDate.toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    });
+
+                    const categoryClass = `category-${cert.category.toLowerCase().replace('-', '-')}`;
+
+                    certificateDetails.innerHTML = `
+                        <div class="detail-row">
+                            <span class="detail-label">Certificate ID:</span>
+                            <span class="detail-value">${cert.certificateId}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Recipient:</span>
+                            <span class="detail-value">${cert.userName}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Event:</span>
+                            <span class="detail-value">${cert.eventTitle}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Category:</span>
+                            <span class="category-badge ${categoryClass}">${cert.category}</span>
+                        </div>
+                        ${cert.position ? `
+                            <div class="detail-row">
+                                <span class="detail-label">Position:</span>
+                                <span class="detail-value">${cert.position}</span>
+                            </div>
+                        ` : ''}
+                        <div class="detail-row">
+                            <span class="detail-label">Issued Date:</span>
+                            <span class="detail-value">${formattedDate}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Issuer:</span>
+                            <span class="detail-value">${cert.issuerName || 'College Event Management System'}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Status:</span>
+                            <span class="detail-value" style="color: #28a745; font-weight: 600;">✅ Active</span>
+                        </div>
+                    `;
+                    certificateDetails.style.display = 'block';
+
+                } else {
+                    // Invalid certificate
+                    resultContainer.className = 'result-container result-invalid';
+                    resultIcon.textContent = '❌';
+                    resultTitle.textContent = 'Certificate Invalid';
+                    resultMessage.textContent = result.message || 'This certificate could not be verified.';
+                    certificateDetails.style.display = 'none';
+                }
+
+            } catch (error) {
+                console.error('Verification error:', error);
+                loading.style.display = 'none';
+                resultContainer.style.display = 'block';
+                resultContainer.className = 'result-container result-invalid';
+                resultIcon.textContent = '⚠️';
+                resultTitle.textContent = 'Verification Failed';
+                resultMessage.textContent = 'Unable to verify certificate. Please check your connection and try again.';
+                certificateDetails.style.display = 'none';
+            }
+        }
+
+        // Allow Enter key to trigger verification
+        document.getElementById('certificateId').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                verifyCertificate();
+            }
+        });
+    </script>
+</body>
+</html>

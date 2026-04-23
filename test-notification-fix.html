@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Notification Fix</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f5f7fa;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+        }
+        .success {
+            border-color: #28a745;
+            background: #d4edda;
+        }
+        .error {
+            border-color: #dc3545;
+            background: #f8d7da;
+        }
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #5a6fd8;
+        }
+        .result {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Notification System Fix Test</h1>
+        <p>Testing the fix for "users.filter is not a function" error</p>
+
+        <div class="test-section" id="test1">
+            <h3>Test 1: Check /api/users endpoint</h3>
+            <button onclick="testUsersEndpoint()">Test Users API</button>
+            <div class="result" id="result1"></div>
+        </div>
+
+        <div class="test-section" id="test2">
+            <h3>Test 2: Test notification recipient count</h3>
+            <button onclick="testRecipientCount()">Test Recipient Count</button>
+            <div class="result" id="result2"></div>
+        </div>
+
+        <div class="test-section" id="test3">
+            <h3>Test 3: Test notification sending (simulation)</h3>
+            <button onclick="testNotificationSending()">Test Notification Sending</button>
+            <div class="result" id="result3"></div>
+        </div>
+    </div>
+
+    <script>
+        async function testUsersEndpoint() {
+            const resultDiv = document.getElementById('result1');
+            const testDiv = document.getElementById('test1');
+            
+            try {
+                resultDiv.textContent = 'Testing /api/users endpoint...';
+                
+                const response = await fetch('/api/users');
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const users = await response.json();
+                
+                if (Array.isArray(users)) {
+                    const studentCount = users.filter(u => u.role === 'Student').length;
+                    resultDiv.textContent = `✅ SUCCESS!\n\nEndpoint working correctly:\n- Total users: ${users.length}\n- Students: ${studentCount}\n- Response is array: ${Array.isArray(users)}\n\nSample user: ${JSON.stringify(users[0] || {}, null, 2)}`;
+                    testDiv.className = 'test-section success';
+                } else {
+                    throw new Error('Response is not an array');
+                }
+                
+            } catch (error) {
+                resultDiv.textContent = `❌ ERROR: ${error.message}`;
+                testDiv.className = 'test-section error';
+            }
+        }
+
+        async function testRecipientCount() {
+            const resultDiv = document.getElementById('result2');
+            const testDiv = document.getElementById('test2');
+            
+            try {
+                resultDiv.textContent = 'Testing recipient count logic...';
+                
+                // Simulate the notification system's recipient count logic
+                const response = await fetch('/api/users');
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const users = await response.json();
+                
+                // This is the exact code from the notification system
+                let count = 0;
+                if (Array.isArray(users)) {
+                    count = users.filter(u => u.role === 'Student').length;
+                } else {
+                    throw new Error('Users response is not an array');
+                }
+                
+                resultDiv.textContent = `✅ SUCCESS!\n\nRecipient count logic working:\n- Found ${count} students\n- No "users.filter is not a function" error\n- Array validation passed`;
+                testDiv.className = 'test-section success';
+                
+            } catch (error) {
+                resultDiv.textContent = `❌ ERROR: ${error.message}`;
+                testDiv.className = 'test-section error';
+            }
+        }
+
+        async function testNotificationSending() {
+            const resultDiv = document.getElementById('result3');
+            const testDiv = document.getElementById('test3');
+            
+            try {
+                resultDiv.textContent = 'Testing notification sending logic...';
+                
+                // Simulate the notification system's sending logic
+                const audience = 'ALL_STUDENTS';
+                let recipients = [];
+                
+                if (audience === 'ALL_STUDENTS') {
+                    const response = await fetch('/api/users');
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    const users = await response.json();
+                    
+                    // Ensure users is an array before filtering
+                    if (Array.isArray(users)) {
+                        recipients = users.filter(u => u.role === 'Student');
+                    } else {
+                        throw new Error('Invalid users data received from server');
+                    }
+                }
+                
+                resultDiv.textContent = `✅ SUCCESS!\n\nNotification sending logic working:\n- Recipients found: ${recipients.length}\n- No array validation errors\n- Ready to send notifications\n\nRecipients preview:\n${recipients.slice(0, 3).map(r => `- ${r.name || 'Unknown'} (${r.email})`).join('\n')}${recipients.length > 3 ? '\n... and more' : ''}`;
+                testDiv.className = 'test-section success';
+                
+            } catch (error) {
+                resultDiv.textContent = `❌ ERROR: ${error.message}`;
+                testDiv.className = 'test-section error';
+            }
+        }
+
+        // Auto-run first test on page load
+        window.onload = function() {
+            testUsersEndpoint();
+        };
+    </script>
+</body>
+</html>

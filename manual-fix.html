@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Manual Registration Fix</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: 0 auto; }
+        .step { background: #f8f9fa; padding: 15px; margin: 10px 0; border-radius: 5px; border-left: 4px solid #007bff; }
+        .success { border-left-color: #28a745; background: #d4edda; }
+        .error { border-left-color: #dc3545; background: #f8d7da; }
+        button { background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin: 5px; }
+        button:hover { background: #0056b3; }
+        .big { font-size: 18px; padding: 15px 30px; }
+        pre { background: #f1f1f1; padding: 10px; border-radius: 3px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>🔧 Manual Registration Count Fix</h1>
+    
+    <div class="step">
+        <h3>Step 1: Clear All Registrations</h3>
+        <button onclick="clearRegistrations()">🗑️ Clear All Data</button>
+        <div id="clearResult"></div>
+    </div>
+
+    <div class="step">
+        <h3>Step 2: Create Sample Student Registrations</h3>
+        <button onclick="createSampleRegistrations()">➕ Create 12 Sample Registrations</button>
+        <div id="createResult"></div>
+    </div>
+
+    <div class="step">
+        <h3>Step 3: Verify Fix</h3>
+        <button onclick="verifyFix()">✅ Check Student Count</button>
+        <div id="verifyResult"></div>
+    </div>
+
+    <div class="step">
+        <h3>Step 4: Test Student Login</h3>
+        <p>After completing steps 1-3:</p>
+        <ol>
+            <li>Login as: <strong>student@college.edu</strong> / any password</li>
+            <li>Select <strong>Student</strong> role</li>
+            <li>Click <strong>"My Events"</strong> in sidebar</li>
+            <li>Should see <strong>12 registrations</strong></li>
+        </ol>
+        <button onclick="window.open('/login.html', '_blank')" class="big">🔗 Open Login Page</button>
+    </div>
+
+    <script>
+        async function clearRegistrations() {
+            const resultDiv = document.getElementById('clearResult');
+            resultDiv.innerHTML = '<p>Clearing registrations...</p>';
+            
+            try {
+                const response = await fetch('/api/registrations/clear-all', {
+                    method: 'DELETE'
+                });
+                const result = await response.json();
+                
+                if (result.success) {
+                    resultDiv.innerHTML = `<p style="color: green;">✅ Cleared ${result.deletedCount} registrations</p>`;
+                } else {
+                    resultDiv.innerHTML = `<p style="color: red;">❌ Error: ${result.message}</p>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<p style="color: red;">❌ Error: ${error.message}</p>`;
+            }
+        }
+
+        async function createSampleRegistrations() {
+            const resultDiv = document.getElementById('createResult');
+            resultDiv.innerHTML = '<p>Creating sample registrations...</p>';
+            
+            try {
+                // First, let's create the registrations manually via API
+                const events = await fetch('/api/events').then(r => r.json());
+                
+                if (events.length === 0) {
+                    resultDiv.innerHTML = '<p style="color: red;">❌ No events found. Please create events first.</p>';
+                    return;
+                }
+
+                let createdCount = 0;
+                const maxRegistrations = Math.min(12, events.length);
+                
+                for (let i = 0; i < maxRegistrations; i++) {
+                    const event = events[i];
+                    
+                    const registrationData = {
+                        userId: 1001,
+                        eventId: event.id,
+                        userName: "Test Student",
+                        userEmail: "student@college.edu",
+                        paymentMethod: "DESK"
+                    };
+                    
+                    try {
+                        const response = await fetch('/api/registrations/register', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(registrationData)
+                        });
+                        
+                        const result = await response.json();
+                        if (result.success) {
+                            createdCount++;
+                        }
+                    } catch (e) {
+                        console.log('Registration failed for event', event.id, e);
+                    }
+                }
+                
+                resultDiv.innerHTML = `<p style="color: green;">✅ Created ${createdCount} sample registrations for student@college.edu</p>`;
+                
+            } catch (error) {
+                resultDiv.innerHTML = `<p style="color: red;">❌ Error: ${error.message}</p>`;
+            }
+        }
+
+        async function verifyFix() {
+            const resultDiv = document.getElementById('verifyResult');
+            resultDiv.innerHTML = '<p>Checking registration count...</p>';
+            
+            try {
+                const response = await fetch('/api/registrations/user/1001/detailed');
+                const registrations = await response.json();
+                const count = registrations.length;
+                
+                if (count >= 10 && count <= 12) {
+                    resultDiv.innerHTML = `
+                        <p style="color: green;">✅ SUCCESS! Student has ${count} registrations</p>
+                        <p>Now test by logging in as <strong>student@college.edu</strong></p>
+                    `;
+                } else if (count === 0) {
+                    resultDiv.innerHTML = `<p style="color: orange;">⚠️ No registrations found. Run Step 2 first.</p>`;
+                } else {
+                    resultDiv.innerHTML = `<p style="color: red;">❌ Found ${count} registrations (expected 10-12)</p>`;
+                }
+                
+            } catch (error) {
+                resultDiv.innerHTML = `<p style="color: red;">❌ Error: ${error.message}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>

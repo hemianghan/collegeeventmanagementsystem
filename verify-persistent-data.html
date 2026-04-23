@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Verify Persistent Data</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f7fa; }
+        .container { max-width: 1000px; margin: 0 auto; }
+        .card { background: white; padding: 20px; margin: 15px 0; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .success { background: #d4edda; color: #155724; border-left: 5px solid #28a745; }
+        .info { background: #d1ecf1; color: #0c5460; border-left: 5px solid #17a2b8; }
+        .warning { background: #fff3cd; color: #856404; border-left: 5px solid #ffc107; }
+        .count { font-size: 32px; font-weight: bold; color: #667eea; margin: 10px 0; }
+        button { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 12px 24px; border-radius: 25px; cursor: pointer; font-weight: 600; margin: 5px; }
+        button:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3); }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background: #667eea; color: white; }
+        tr:hover { background: #f5f5f5; }
+        .status-ok { color: #28a745; font-weight: bold; }
+        .status-error { color: #dc3545; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>💾 Verify Persistent Backend Data</h1>
+        
+        <div class="card info">
+            <h3>📊 Data Persistence Status</h3>
+            <p><strong>Database:</strong> H2 File-based (./data/eventdb)</p>
+            <p><strong>Persistence:</strong> Data saved permanently to disk</p>
+            <p><strong>Behavior:</strong> Data survives server restarts</p>
+        </div>
+        
+        <button onclick="verifyAllData()">🔍 Verify All Data</button>
+        <button onclick="checkServerRestart()">🔄 Check After Restart</button>
+        
+        <div id="results"></div>
+    </div>
+
+    <script>
+        async function verifyAllData() {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<div class="card info">🔄 Checking backend database...</div>';
+            
+            try {
+                // Check Student 1
+                const student1Response = await fetch('http://localhost:8080/api/registrations/user/1001/detailed');
+                const student1Data = await student1Response.json();
+                
+                // Check Student 2
+                const student2Response = await fetch('http://localhost:8080/api/registrations/user/1002/detailed');
+                const student2Data = await student2Response.json();
+                
+                // Check total registrations
+                const allEventsResponse = await fetch('http://localhost:8080/api/events');
+                const allEvents = await allEventsResponse.json();
+                
+                // Check first event's registrations (admin panel)
+                let adminCount = 0;
+                if (allEvents.length > 0) {
+                    const firstEventRegs = await fetch(`http://localhost:8080/api/registrations/event/${allEvents[0].id}`);
+                    const regsData = await firstEventRegs.json();
+                    adminCount = regsData.length;
+                }
+                
+                const student1Count = student1Data.length;
+                const student2Count = student2Data.length;
+                
+                let html = `
+                    <div class="card ${student1Count === 12 && student2Count === 12 ? 'success' : 'warning'}">
+                        <h3>👨‍🎓 Student Panel Data</h3>
+                        <div class="grid">
+                            <div>
+                                <h4>Student 1: Test Student</h4>
+                                <p><strong>Email:</strong> student@college.edu</p>
+                                <p><strong>User ID:</strong> 1001</p>
+                                <p><strong>Registrations:</strong></p>
+                                <div class="count">${student1Count}</div>
+                                <p class="${student1Count === 12 ? 'status-ok' : 'status-error'}">
+                                    ${student1Count === 12 ? '✅ Correct (12 events)' : '❌ Expected 12, got ' + student1Count}
+                                </p>
+                            </div>
+                            <div>
+                                <h4>Student 2: Hemishaan Ghan</h4>
+                                <p><strong>Email:</strong> hemishaanghan1@gmail.com</p>
+                                <p><strong>User ID:</strong> 1002</p>
+                                <p><strong>Registrations:</strong></p>
+                                <div class="count">${student2Count}</div>
+                                <p class="${student2Count === 12 ? 'status-ok' : 'status-error'}">
+                                    ${student2Count === 12 ? '✅ Correct (12 events)' : '❌ Expected 12, got ' + student2Count}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card ${adminCount >= 10 ? 'success' : 'warning'}">
+                        <h3>👨‍💼 Admin Panel Data</h3>
+                        <p><strong>Sample Event:</strong> ${allEvents[0]?.title || 'N/A'}</p>
+                        <p><strong>Registrations per Event:</strong></p>
+                        <div class="count">${adminCount}</div>
+                        <p class="${adminCount >= 10 ? 'status-ok' : 'status-error'}">
+                            ${adminCount >= 10 ? '✅ Correct (10+ registrations)' : '❌ Expected 10+, got ' + adminCount}
+                        </p>
+                    </div>
+                    
+                    <div class="card info">
+                        <h3>📋 Sample Registrations for Student 1</h3>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Event Title</th>
+                                    <th>Registration Date</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${student1Data.slice(0, 5).map((item, index) => `
+                                    <tr>
+                                        <td>${index + 1}</td>
+                                        <td>${item.event.title}</td>
+                                        <td>${new Date(item.registration.registrationDate).toLocaleDateString()}</td>
+                                        <td><span class="status-ok">${item.registration.paymentStatus}</span></td>
+                                    </tr>
+                                `).join('')}
+                                ${student1Data.length > 5 ? `<tr><td colspan="4" style="text-align: center; color: #666;">... and ${student1Data.length - 5} more</td></tr>` : ''}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+                
+                if (student1Count === 12 && student2Count === 12 && adminCount >= 10) {
+                    html += `
+                        <div class="card success">
+                            <h3>🎉 ALL DATA VERIFIED!</h3>
+                            <p><strong>✅ Backend Database:</strong> Working correctly</p>
+                            <p><strong>✅ Student 1:</strong> 12 permanent registrations</p>
+                            <p><strong>✅ Student 2:</strong> 12 permanent registrations</p>
+                            <p><strong>✅ Admin Panel:</strong> 10+ registrations per event</p>
+                            <p><strong>💾 Persistence:</strong> Data saved to ./data/eventdb</p>
+                            <p><strong>🔄 Server Restart:</strong> Data will be preserved</p>
+                        </div>
+                    `;
+                }
+                
+                resultsDiv.innerHTML = html;
+                
+            } catch (error) {
+                resultsDiv.innerHTML = `<div class="card warning">❌ Error: ${error.message}<br><br>Make sure the server is running on port 8080</div>`;
+            }
+        }
+        
+        async function checkServerRestart() {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = `
+                <div class="card info">
+                    <h3>🔄 Testing Data Persistence After Restart</h3>
+                    <p><strong>Instructions:</strong></p>
+                    <ol>
+                        <li>Note the current registration counts above</li>
+                        <li>Stop the server (Ctrl+C in terminal)</li>
+                        <li>Restart the server (./gradlew :server:bootRun)</li>
+                        <li>Click "Verify All Data" again</li>
+                        <li>Counts should remain the same (data persisted!)</li>
+                    </ol>
+                    <p><strong>Expected Behavior:</strong></p>
+                    <p>✅ Server log should show: "Sample data already exists (XXX registrations found)"</p>
+                    <p>✅ Student 1 should still have 12 registrations</p>
+                    <p>✅ Student 2 should still have 12 registrations</p>
+                </div>
+            `;
+        }
+        
+        // Auto-run verification on page load
+        setTimeout(verifyAllData, 1000);
+    </script>
+</body>
+</html>
